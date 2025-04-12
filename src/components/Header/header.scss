@@ -1,0 +1,34 @@
+@import "../../scss/colors.scss";
+
+.header {
+    .main-header {
+        padding: 12px;
+        background-color: $primary--color;
+        &--wrapper {
+            max-width: 1280px;
+            margin: auto;
+        }
+    }
+    .input--search {
+        width: 500px;
+    }
+    .nav-header {
+        background-color: $white--color;
+        padding: 12px;
+        .category--btn {
+            border-radius: 0;
+            background-color: $gray--50--color;
+            border: none;
+            font-weight: 600;
+            &:hover {
+                opacity: 0.6;
+                background-color: $gray--50--color;
+                color: $black--color;
+            }
+        }
+        &--wrapper {
+            max-width: 1280px;
+            margin: auto;
+        }
+    }
+}
