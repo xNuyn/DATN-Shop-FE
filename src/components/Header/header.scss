@@ -29,6 +29,11 @@
         &--wrapper {
             max-width: 1280px;
             margin: auto;
+            position: relative;
+        }
+        .category--menu {
+            position: absolute;
+            top: 42px;
         }
     }
 }
