@@ -8,6 +8,14 @@
             max-width: 1280px;
             margin: auto;
         }
+        .icon--wrapper {
+            position: relative;
+        }
+        .signIn-modal {
+            position: absolute;
+            top: 40px;
+            right: 0;
+        }
     }
     .input--search {
         width: 500px;

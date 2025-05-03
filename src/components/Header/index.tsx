@@ -9,6 +9,7 @@ import Logo from "../../assets/icons/Logo";
 import Reload from "../../assets/icons/Reload";
 import ShoppingCart from "../../assets/icons/ShoppingCart";
 import UserProfile from "../../assets/icons/UserProfile";
+import SignIn from "../SignIn";
 import "./header.scss";
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -28,6 +29,7 @@ const items: MenuItem[] = [
 
 const Header: FC = memo(() => {
     const [openMenu, setOpenMenu] = useState(false);
+    const [openModalSignIn, setOpenModalSignIn] = useState(false);
 
     return (
         <header className="header">
@@ -49,7 +51,14 @@ const Header: FC = memo(() => {
                             <ShoppingCart />
                         </Badge>
                         <Heart />
-                        <UserProfile />
+                        <div
+                            onClick={() => setOpenModalSignIn(!openModalSignIn)}
+                        >
+                            <UserProfile />
+                        </div>
+                        <div className="signIn-modal" hidden={!openModalSignIn}>
+                            <SignIn />
+                        </div>
                     </Flex>
                 </Flex>
             </div>

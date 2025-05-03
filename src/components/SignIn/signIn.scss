@@ -1,0 +1,41 @@
+@import "../../scss/colors.scss";
+
+.signIn {
+    width: 424px;
+    padding: 24px 32px;
+    border: 1px solid $gray--400--color;
+    border-radius: 8px;
+    background-color: $white--color;
+    .title {
+        font-size: 20px;
+        font-weight: 400;
+        text-align: center;
+    }
+    .description {
+        display: inline-block;
+        text-align: center;
+        font-size: 14px;
+        color: $gray--400--color;
+        position: relative;
+        &::after {
+            content: "";
+            height: 1px;
+            width: 30%;
+            background-color: $gray--400--color;
+            position: absolute;
+            top: 60%;
+            right: 0;
+            z-index: 10;
+        }
+        &::before {
+            content: "";
+            height: 1px;
+            width: 30%;
+            background-color: $gray--400--color;
+            position: absolute;
+            top: 60%;
+            left: 0;
+            z-index: 10;
+        }
+    }
+}
