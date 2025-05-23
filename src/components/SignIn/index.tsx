@@ -2,8 +2,12 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import { Button, Flex, Form, Input, Typography } from "antd";
 import { FC } from "react";
 import "./signIn.scss";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const SignIn: FC = () => {
+    const [openSignIn, setOpenSignIn] = useState(true);
+    const navigate = useNavigate();
     const [form] = Form.useForm();
 
     return (
@@ -36,7 +40,16 @@ const SignIn: FC = () => {
                     <Typography.Text className="description">
                         Don't have account
                     </Typography.Text>
-                    <Button block>CREATE ACCOUNT</Button>
+                    {/* <Button onClick={() => navigate("/signup")} block>CREATE ACCOUNT</Button> */}
+                    <Button
+                        onClick={() => {
+                            setOpenSignIn(false);
+                            navigate("/signup");  // chuyển trang
+                        }}
+                        block
+                        >
+                        CREATE ACCOUNT
+                    </Button>
                 </Flex>
             </Form>
         </Flex>

@@ -1,12 +1,13 @@
-import { Route, Routes } from "react-router-dom";
+import RouteComponent from "./routes/routes"
 import "./app.scss";
-import HomePage from "./pages/HomePage";
 
 function App() {
+    const routeElement = RouteComponent();
+
     return (
-        <Routes>
-            <Route path="/" element={<HomePage />} />
-        </Routes>
+        <div>
+            {routeElement}
+        </div>
     );
 }
 

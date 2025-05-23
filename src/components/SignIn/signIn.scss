@@ -38,4 +38,33 @@
             z-index: 10;
         }
     }
+    .ant-btn-primary {
+        background-color: #ff6600;
+        border-color: #ff6600;
+        color: white;
+        font-weight: 600;
+        width: 100%;
+        height: 40px;
+        margin-bottom: 10px;
+
+        &:hover {
+        background-color: #e26017 !important;
+        border-color: #e26017 !important;
+        }
+    }
+
+    .ant-btn-default {
+        background-color: white;
+        border: 1px solid #ff6600;
+        color: #ff6600;
+        font-weight: 600;
+        width: 100%;
+        height: 40px;
+
+        &:hover {
+        background-color: #e26017;
+        border-color: #e26017 !important;
+        color: #e26017 !important;
+        }
+    }
 }

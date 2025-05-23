@@ -1,0 +1,117 @@
+.need-help-page {
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff;
+  gap: 40px;
+  flex-wrap: wrap;
+
+  .faq-container {
+    flex: 1;
+    min-width: 400px;
+
+    h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #222;
+    }
+
+    .faq-list {
+      list-style: none;
+      padding: 0;
+
+      .faq-item {
+        background: #fff;
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        overflow: hidden;
+
+        .faq-question {
+          padding: 16px 20px;
+          font-weight: 500;
+          cursor: pointer;
+          position: relative;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: #fff;
+          transition: background 0.3s ease;
+
+          &:hover {
+            background-color: #f2f2f2;
+          }
+
+          .faq-toggle {
+            font-size: 20px;
+            color: #ff7a00;
+          }
+        }
+
+        .faq-answer {
+          padding: 16px 20px;
+          border-top: 1px solid #eee;
+          background-color: #fff;
+          font-size: 15px;
+          color: #444;
+        }
+
+        &.open {
+          .faq-question {
+            background-color: #fff6eb;
+            color: #ff7a00;
+          }
+        }
+      }
+    }
+  }
+
+  .support-form {
+    flex: 0.8;
+    min-width: 320px;
+    background-color: #fffbe5;
+    border: 1px solid #fddfa8;
+    padding: 25px;
+    border-radius: 8px;
+
+    h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    p {
+      font-size: 14px;
+      margin-bottom: 20px;
+      color: #555;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+
+      input,
+      textarea {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-family: inherit;
+      }
+
+      button {
+        background-color: #ff7a00;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background-color: #e06b00;
+        }
+      }
+    }
+  }
+}

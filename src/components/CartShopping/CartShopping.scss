@@ -1,0 +1,119 @@
+.cart-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 424px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  z-index: 10;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+
+  h4 {
+    font-size: 16px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    color: #222;
+  }
+
+  .cart-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 8px;
+    padding: 8px;
+
+    img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      margin-right: 12px;
+    }
+
+    .item-info {
+      flex: 1;
+
+      p {
+        margin: 0 0 4px 0;
+        font-size: 14px;
+        font-weight: 500;
+        color: #222;
+      }
+
+      span {
+        font-size: 13px;
+        color: #888;
+
+        strong {
+          color: #00b3ff;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .remove {
+      cursor: pointer;
+      font-size: 18px;
+      color: #aaa;
+      margin-left: 8px;
+      font-weight: bold;
+
+      &:hover {
+        color: #f5222d;
+      }
+    }
+  }
+
+  .subtotal {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 500;
+    color: #888;
+    margin: 20px 0 16px 0;
+    border-top: 1px dashed #d9d9d9;
+    padding-top: 12px;
+
+    strong {
+      color: #222;
+      font-weight: 600;
+    }
+  }
+
+  .ant-btn-primary {
+    background-color: #ff6600;
+    border-color: #ff6600;
+    color: white;
+    font-weight: 600;
+    width: 100%;
+    height: 40px;
+    margin-bottom: 10px;
+
+    &:hover {
+      background-color: #e26017 !important;
+      border-color: #e26017 !important;
+    }
+  }
+
+  .ant-btn-default {
+    background-color: white;
+    border: 1px solid #ff6600;
+    color: #ff6600;
+    font-weight: 600;
+    width: 100%;
+    height: 40px;
+
+    &:hover {
+      background-color: #e26017;
+      border-color: #e26017 !important;
+      color: #e26017 !important;
+    }
+  }
+}
+
+.cart-wrapper {
+  position: relative;
+  cursor: pointer;
+}

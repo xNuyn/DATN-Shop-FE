@@ -1,0 +1,25 @@
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  gap: 8px;
+
+  .page, .arrow {
+    padding: 6px 12px;
+    background: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+
+    &.active {
+      background: #ff6600;
+      color: white;
+      border-color: #ff6600;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+}

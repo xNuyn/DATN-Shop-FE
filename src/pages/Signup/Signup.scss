@@ -1,0 +1,123 @@
+.signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 100px;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.signup-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 500px;
+  padding: 30px;
+  border-radius: 6px;
+}
+
+.signup-tabs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.signup-tabs button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: none;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.signup-tabs .active {
+  border-color: #ff6600;
+  color: #ff6600;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-form input[type="text"],
+.signup-form input[type="email"],
+.signup-form input[type="password"] {
+  margin-bottom: 12px;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  font-size: 12px;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.checkbox-label input {
+  margin-right: 8px;
+  margin-top: 3px;
+}
+
+.checkbox-label a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.signup-button {
+  background-color: #ff6600;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 15px;
+
+  &:hover {
+            background-color: #e26017;
+        }
+}
+
+.or-divider {
+  text-align: center;
+  color: #999;
+  font-size: 12px;
+  margin: 10px 0;
+}
+
+.signup-password-input-wrapper {
+  position: relative;
+
+  input {
+    width: 100%;
+    padding-right: 40px;
+    height: 40px;
+    line-height: 40px;
+    box-sizing: border-box;
+  }
+
+  .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #333;
+    font-size: 18px;
+    height: 20px;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
