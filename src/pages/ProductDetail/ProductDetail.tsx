@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+// src/pages/ProductDetail.tsx
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import "./ProductDetail.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -17,166 +19,270 @@ import {
   faTwitter,
   faPinterestP,
 } from "@fortawesome/free-brands-svg-icons";
-import ProductCategoryGrid from '../../components/ProductCategoryGrid/ProductCategoryGrid';
+import ProductCategoryGrid from "../../components/ProductCategoryGrid/ProductCategoryGrid";
+import { getProductDetail } from "../../services/productService";
 
-
-interface FakeData {
-  images: string[];
-  rating: { stars: number; count: number };
-  product: {
-    title: string;
-    sku: string;
-    brand: string;
-    availability: string;
-    category: string;
-  };
-  pricing: {
-    current: number;
-    original: number;
-    discountPercent: number;
-  };
-  options: {
-    colors: { hex: string; selected: boolean }[];
-    sizes: string[];
-  };
-  tabs: {
-    description: string;
-    specification: string[];
-    shippingInformation: { method: string; time: string }[];
-    reviewSummary: string;
-  };
+function colorToHex(colorName: string): string {
+  switch (colorName.toLowerCase()) {
+    case "trắng":
+    case "white":
+      return "#FFFFFF";
+    case "đen":
+    case "black":
+      return "#000000";
+    case "xanh":
+    case "blue":
+      return "#0000FF";
+    case "đỏ":
+    case "red":
+      return "#C8102E";
+    default:
+      return colorName; // nếu backend đã trả sẵn mã Hex, vẫn dùng luôn
+  }
 }
 
-const fakeData: FakeData = {
-  images: [
-    "https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/44/327980/dell-latitude-3440-i5-l3440i51235u16g512g-thumb-638754978664212690-600x600.jpg",
-    "https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/44/311178/asus-vivobook-go-15-e1504fa-r5-nj776w-140225-100949-251-600x600.jpg",
-    "https://cdn.tgdd.vn/Products/Images/44/335362/macbook-air-13-inch-m4-xanh-da-troi-600x600.jpg",
-    "https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/44/326124/msi-thin-15-b12ucx-i5-2046vn-140225-102530-055-600x600.jpg",
-    "https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/44/322222/acer-aspire-3-a314-42p-r3b3-r7-nxksfsv001-thumb-638754904905578083-600x600.jpg",
-  ],
-  rating: {
-    stars: 4.7,
-    count: 21671,
-  },
-  product: {
-    title:
-      "2020 Apple MacBook Pro with Apple M1 Chip (13-inch, 8GB RAM, 256GB SSD) – Space Gray",
-    sku: "A264671",
-    brand: "Apple",
-    availability: "In Stock",
-    category: "Electronics Devices",
-  },
-  pricing: {
-    current: 1699,
-    original: 1999,
-    discountPercent: 21,
-  },
-  options: {
-    colors: [
-      { hex: "#c0c0c0", selected: true },
-      { hex: "#f0f0f0", selected: false },
-    ],
-    sizes: ["14-inch Liquid Retina XDR display"],
-  },
-  tabs: {
-    description:
-      "The most powerful MacBook Pro ever is here... (lorem ipsum)...",
-    specification: [
-      "Free 1 Year Warranty",
-      "Free Shipping & Fast Delivery",
-      "100% Money-back guarantee",
-      "24/7 Customer support",
-      "Secure payment method",
-    ],
-    shippingInformation: [
-      { method: "Courier", time: "2–4 days, free shipping" },
-      { method: "Local Shipping", time: "up to one week, $19.00" },
-      { method: "UPS Ground Shipping", time: "4–6 days, $29.00" },
-      { method: "Uniship Global Export", time: "3–4 days, $39.00" },
-    ],
-    reviewSummary: "(21,671 ratings)…",
-  },
+type SubProduct = {
+  id: number;
+  old_price: number;
+  price: number;
+  color: string;
+  size: string;
+  stock: number;
+  image: string;
+  specification: string;
+  discount_percentage: string;
+  saled_per_month: number;
+  status_enum: number;
+};
+
+type ProductData = {
+  id: number;
+  name: string;
+  description: string;
+  category: string;
+  brand: string;
+  image: string;
+  price_min: number;
+  price_max: number;
+  sold_per_month: number;
+  sub_products: SubProduct[];
 };
 
 export default function ProductDetail() {
-  const {
-    images,
-    rating,
-    product,
-    pricing,
-    options,
-    tabs,
-  } = fakeData;
-
+  // Lấy `id` từ URL params
+  const { id } = useParams<{ id: string }>();
+  const [data, setData] = useState<ProductData | null>(null);
   const [mainIdx, setMainIdx] = useState(0);
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState<
     "description" | "specification" | "shippingInformation" | "review"
   >("description");
 
+  // Sub-product đang được chọn
+  const [selectedSubProduct, setSelectedSubProduct] = useState<SubProduct | null>(null);
+
+  // Mảng tất cả màu, kích cỡ, hình ảnh
+  const [allColors, setAllColors] = useState<string[]>([]);
+  const [allSizes, setAllSizes] = useState<string[]>([]);
+  const [allImages, setAllImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!id) return;
+    const productId = Number(id);
+    if (isNaN(productId)) return;
+
+    getProductDetail(productId)
+      .then((res) => {
+        setData(res);
+
+        if (res.sub_products && res.sub_products.length > 0) {
+          // Mặc định chọn sub_product đầu tiên
+          setSelectedSubProduct(res.sub_products[0]);
+
+          // Unique màu
+          const colors : any = Array.from(
+            new Set(res.sub_products.map((sp: SubProduct) => sp.color))
+          );
+          setAllColors(colors);
+
+          // Unique kích cỡ (tách chuỗi "128GB, 256GB, ...")
+          const sizes : any = Array.from(
+            new Set(
+              res.sub_products
+                .flatMap((sp: SubProduct) => sp.size.split(",").map((s) => s.trim()))
+            )
+          );
+          setAllSizes(sizes);
+
+          // Danh sách ảnh từ mỗi sub_product
+          const images = res.sub_products.map((sp: any) => sp.image);
+          setAllImages(images);
+
+          setMainIdx(0);
+        }
+      })
+      .catch((err) => {
+        console.error("Lỗi khi fetch ProductDetail:", err);
+      });
+  }, [id]);
+
+  // Nếu chưa có dữ liệu hoặc chưa có sub-product, hiển thị loading
+  if (!data || !selectedSubProduct) {
+    return <div className="loading">Loading...</div>;
+  }
+
+  // Tìm index hiện tại của selectedSubProduct
+  const currentIndex = data.sub_products.findIndex(
+    (sp) => sp.id === selectedSubProduct.id
+  );
+
+  // Prev image
+  const handlePrevImage = () => {
+    if (!data) return;
+    const total = data.sub_products.length;
+    const prevIndex = (currentIndex - 1 + total) % total;
+    setSelectedSubProduct(data.sub_products[prevIndex]);
+    setMainIdx(prevIndex);
+    setQty(1);
+  };
+
+  // Next image
+  const handleNextImage = () => {
+    if (!data) return;
+    const total = data.sub_products.length;
+    const nextIndex = (currentIndex + 1) % total;
+    setSelectedSubProduct(data.sub_products[nextIndex]);
+    setMainIdx(nextIndex);
+    setQty(1);
+  };
+
+  // Thông tin chung product
+  const product = {
+    brand: data.brand,
+    category: data.category,
+  };
+
+  // Thông tin của sub-product đang chọn
+  const subproduct = {
+    title: data.name,
+    sku: selectedSubProduct.id,
+    current: selectedSubProduct.price,
+    original: selectedSubProduct.old_price,
+    availability: selectedSubProduct.stock > 0 ? "In Stock" : "Out of Stock",
+    discountPercent: parseFloat(selectedSubProduct.discount_percentage),
+  };
+
+  // Nội dung tabs
+  const tabs = {
+    description: data.description,
+    specification: selectedSubProduct.specification.split(", "),
+    reviewSummary: "Coming soon...",
+  };
+
+  // Xử lý chọn màu
+  const handleColorSelect = (color: string) => {
+    if (!data) return;
+    const found = data.sub_products.find((sp) => sp.color === color);
+    if (found) {
+      setSelectedSubProduct(found);
+      setMainIdx(data.sub_products.findIndex((sp) => sp.id === found.id));
+      setQty(1);
+    }
+  };
+
+  // Xử lý chọn kích cỡ
+  const handleSizeSelect = (size: string) => {
+    if (!data || !selectedSubProduct) return;
+    const found = data.sub_products.find(
+      (sp) =>
+        sp.color === selectedSubProduct.color &&
+        sp.size.trim() === size
+    );
+    if (found) {
+      setSelectedSubProduct(found);
+      setMainIdx(data.sub_products.findIndex((sp) => sp.id === found.id));
+      setQty(1);
+    }
+  };
+
+  // Chọn ảnh thumbnail
+  const handleImageSelect = (index: number) => {
+    if (!data) return;
+    const sp = data.sub_products[index];
+    setSelectedSubProduct(sp);
+    setMainIdx(index);
+    setQty(1);
+  };
+
   return (
     <div className="product-detail">
       <div className="top">
         {/* Gallery */}
         <div className="gallery">
+          {allImages.length > 1 && (
+            <button className="nav prev" onClick={handlePrevImage}>
+              &lt;
+            </button>
+          )}
+
           <img
-            src={images[mainIdx]}
-            alt={`Product ${mainIdx + 1}`}
+            src={selectedSubProduct.image}
+            alt={`Main Image`}
             className="main-img"
           />
-          <button
-            className="nav prev"
-            onClick={() =>
-              setMainIdx((mainIdx - 1 + images.length) % images.length)
-            }
-          >
-            ‹
-          </button>
-          <button
-            className="nav next"
-            onClick={() => setMainIdx((mainIdx + 1) % images.length)}
-          >
-            ›
-          </button>
-          <div className="thumbs">
-            {images.map((src, i) => (
-              <img
-                key={i}
-                src={src}
-                alt=""
-                className={i === mainIdx ? "active" : ""}
-                onClick={() => setMainIdx(i)}
-              />
-            ))}
-          </div>
+
+          {allImages.length > 1 && (
+            <button className="nav next" onClick={handleNextImage}>
+              &gt;
+            </button>
+          )}
+
+          {allImages.length > 1 && (
+            <div className="thumbs">
+              {allImages.map((src, i) => (
+                <img
+                  key={i}
+                  src={src}
+                  alt={`Thumb ${i + 1}`}
+                  className={
+                    data.sub_products[i].id === selectedSubProduct.id
+                      ? "active"
+                      : ""
+                  }
+                  onClick={() => handleImageSelect(i)}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Info */}
         <div className="info">
           <div className="rating">
             {Array.from({ length: 5 }).map((_, i) => (
-              <FontAwesomeIcon
-                key={i}
-                icon={faStar}
-                color="#f5a623"
-              />
+              <FontAwesomeIcon key={i} icon={faStar} color="#f5a623" />
             ))}
-            <span>
-              {rating.stars} Star Rating ({rating.count} User feedback)
-            </span>
+            <span>4.8 Star Rating (Auto-fixed)</span>
           </div>
-          <h1 className="title">{product.title}</h1>
+          <h1 className="title">{subproduct.title}</h1>
           <ul className="meta">
             <li>
-              <strong>Sku:</strong> {product.sku}
+              <strong>Sku:</strong> {subproduct.sku}
             </li>
             <li>
               <strong>Brand:</strong> {product.brand}
             </li>
             <li>
               <strong>Availability:</strong>{" "}
-              <span className="in-stock">{product.availability}</span>
+              <span
+                className={
+                  subproduct.availability === "In Stock"
+                    ? "in-stock"
+                    : "out-of-stock"
+                }
+              >
+                {subproduct.availability}
+              </span>
             </li>
             <li>
               <strong>Category:</strong> {product.category}
@@ -184,41 +290,54 @@ export default function ProductDetail() {
           </ul>
 
           <div className="price-block">
-            <span className="new">${pricing.current}</span>
-            <span className="old">${pricing.original}</span>
+            <span className="new">${subproduct.current}</span>
+            <span className="old">${subproduct.original}</span>
             <span className="discount">
-              {pricing.discountPercent}% OFF
+              {subproduct.discountPercent}% OFF
             </span>
           </div>
 
+          {/* Lựa chọn color & size */}
           <div className="options">
             <div className="option">
               <label>Color:</label>
               <div className="colors">
-                {options.colors.map((c, i) => (
+                {allColors.map((color, i) => (
                   <span
                     key={i}
-                    className={`circle ${c.selected ? "selected" : ""}`}
-                    style={{ background: c.hex }}
+                    className={`circle ${
+                      selectedSubProduct.color === color ? "selected" : ""
+                    }`}
+                    title={color}
+                    onClick={() => handleColorSelect(color)}
+                    style={{ backgroundColor: colorToHex(color) }}
                   />
                 ))}
               </div>
             </div>
             <div className="option">
               <label>Size:</label>
-              <select>
-                {options.sizes.map((s, i) => (
-                  <option key={i}>{s}</option>
-                ))}
+              <select
+                value={selectedSubProduct.size.trim()}
+                onChange={(e) => handleSizeSelect(e.target.value)}
+              >
+                {data.sub_products
+                  .filter((sp) => sp.color === selectedSubProduct.color)
+                  .flatMap((sp) =>
+                    sp.size.split(",").map((s) => s.trim())
+                  )
+                  .filter((value, idx, self) => self.indexOf(value) === idx)
+                  .map((size, i) => (
+                    <option key={i}>{size}</option>
+                  ))}
               </select>
             </div>
           </div>
 
+          {/* Quantity & Add to Cart */}
           <div className="actions">
             <div className="qty">
-              <button
-                onClick={() => setQty(Math.max(1, qty - 1))}
-              >
+              <button onClick={() => setQty(Math.max(1, qty - 1))}>
                 <FontAwesomeIcon icon={faMinus} />
               </button>
               <span>{qty.toString().padStart(2, "0")}</span>
@@ -226,10 +345,18 @@ export default function ProductDetail() {
                 <FontAwesomeIcon icon={faPlus} />
               </button>
             </div>
-            <button className="btn add-to-cart">
+            <button
+              className="btn add-to-cart"
+              disabled={selectedSubProduct.stock === 0}
+            >
               Add To Cart <FontAwesomeIcon icon={faShoppingCart} />
             </button>
-            <button className="btn buy-now">Buy Now</button>
+            <button
+              className="btn buy-now"
+              disabled={selectedSubProduct.stock === 0}
+            >
+              Buy Now
+            </button>
           </div>
 
           <div className="extras">
@@ -251,20 +378,29 @@ export default function ProductDetail() {
           <div className="secure">
             <span>100% Guarantee Safe Checkout</span>
             <div className="payment-methods">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg" alt="Amex" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="MasterCard" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" />
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg"
+                alt="Amex"
+              />
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg"
+                alt="Visa"
+              />
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png"
+                alt="MasterCard"
+              />
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
+                alt="PayPal"
+              />
             </div>
-            {/* <img
-              src="https://via.placeholder.com/300x40?text=Visa+PayPal+..."
-              alt="payments"
-            /> */}
           </div>
         </div>
       </div>
+
+      {/* Tabs */}
       <div className="bottom">
-        {/* Tabs */}
         <div className="tabs">
           {[
             "description",
@@ -286,7 +422,6 @@ export default function ProductDetail() {
           ))}
         </div>
 
-        {/* Tab Content */}
         <div className="tab-content">
           {activeTab === "description" && (
             <div className="desc">
@@ -297,29 +432,23 @@ export default function ProductDetail() {
             <div className="spec">
               <h3>Specification</h3>
               <ul>
-                {tabs.specification.map((spec, i) => (
-                  <li key={i}>{spec}</li>
+                {tabs.specification.map((item, i) => (
+                  <li key={i}>{item}</li>
                 ))}
               </ul>
             </div>
           )}
           {activeTab === "shippingInformation" && (
-            <div className="spec">
+            <div className="shipping">
               <h3>Shipping Information</h3>
-              <ul>
-                {tabs.shippingInformation.map((sh, i) => (
-                  <li key={i}>
-                    {sh.method}: {sh.time}
-                  </li>
-                ))}
-              </ul>
+              <p>Thông tin vận chuyển đang được cập nhật...</p>
             </div>
           )}
           {activeTab === "review" && (
-              <div className="review">
-                  <h3>Reviews</h3>
-                  <p>{tabs.reviewSummary}</p>
-              </div>
+            <div className="review">
+              <h3>Reviews</h3>
+              <p>{tabs.reviewSummary}</p>
+            </div>
           )}
         </div>
       </div>

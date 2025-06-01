@@ -21,11 +21,11 @@ interface ProductItemProps {
 }
 
 const ProductItem: FC<ProductItemProps> = memo(
-    ({ image, name, price_min, price_max, sold_per_month }) => {
+    ({id, image, name, price_min, price_max, sold_per_month }) => {
        const navigate = useNavigate();
 
         const handleClick = () => {
-            navigate(`/product-detail`);
+            navigate(`/product-detail/${id}`);
         };
         return (
             <Flex vertical gap={12} className="product-item" onClick={handleClick} style={{ cursor: "pointer" }}>

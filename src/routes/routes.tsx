@@ -131,7 +131,7 @@ export default function RouteComponent() {
             ),
         },
         {
-            path: '/product-detail',
+            path: '/product-detail/:id',
             element: (
                 <PrimaryLayout>
                     <ProductDetail/>

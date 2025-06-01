@@ -10,7 +10,6 @@ import Reload from "../../assets/icons/Reload";
 import ShoppingCart from "../../assets/icons/ShoppingCart";
 import UserProfile from "../../assets/icons/UserProfile";
 import SignIn from "../SignIn";
-import CartShopping from "../CartShopping/index";
 import "./header.scss";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
