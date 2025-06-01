@@ -1,0 +1,191 @@
+.product-detail {
+  max-width: 1280px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+
+  .top {
+    display: flex;
+    gap: 40px;
+  }
+
+  .gallery {
+    position: relative;
+    flex: 1;
+
+    .main-img {
+      width: 100%;
+      border: 1px solid #eee;
+      border-radius: 4px;
+    }
+    .nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.8);
+      border: none;
+      font-size: 24px;
+      padding: 4px 12px;
+      cursor: pointer;
+      &.prev { left: 10px; }
+      &.next { right: 10px; }
+    }
+    .thumbs {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      img {
+        width: 80px;
+        height: 50px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid transparent;
+        border-radius: 2px;
+        &.active { border-color: #ff8c00; }
+      }
+    }
+  }
+
+  .info {
+    flex: 1;
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      span { color: #777; }
+    }
+    .title {
+      font-size: 24px;
+      margin: 12px 0;
+    }
+    .meta {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 14px;
+      li {
+        width: 45%;
+        strong { margin-right: 4px; }
+        .in-stock { color: green; }
+      }
+    }
+    .price-block {
+      margin: 16px 0;
+      .new { font-size: 24px; color: #0099ff; margin-right: 8px; }
+      .old { text-decoration: line-through; color: #aaa; margin-right: 8px; }
+      .discount { background: #ffd966; padding: 2px 6px; border-radius: 2px; font-size: 14px; }
+    }
+    .options {
+      display: flex;
+      gap: 24px;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      .option {
+        label { display: block; margin-bottom: 6px; font-size: 14px; }
+        .colors {
+          display: flex; gap: 8px;
+          .circle {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid #ccc; cursor: pointer;
+            &.selected { border-color: #ff8c00; }
+          }
+        }
+        select {
+          padding: 6px 8px;
+          font-size: 14px;
+        }
+      }
+    }
+    .actions {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      .qty {
+        display: flex;
+        align-items: center;
+        button {
+          background: none; border: 1px solid #ccc; padding: 4px 8px; cursor: pointer;
+        }
+        span { margin: 0 8px; min-width: 24px; text-align: center; }
+      }
+      .btn {
+        padding: 10px 40px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        &.add-to-cart { background: #ff8c00; color: #fff; }
+        &.buy-now { background: none; border: 1px solid #ff8c00; color: #ff8c00; }
+      }
+    }
+    .extras {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin: 20px 0;
+      button {
+        background: none; border: none; color: #555; font-size: 14px; cursor: pointer;
+        svg { margin-right: 4px; }
+      }
+      .share {
+        margin-left: auto;
+        margin-right: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        span { font-size: 14px; color: #777; margin-right: 4px; }
+        svg { font-size: 16px; cursor: pointer; }
+      }
+    }
+    .secure {
+      margin-top: 20px;
+      border: 2px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      span { display: block; margin: 10px auto 0 auto; font-size: 14px; }
+      // img { vertical-align: middle; max-width: 300px; }
+      .payment-methods {
+        display: flex;
+        gap: 16px;
+        margin: 12px auto;
+        justify-content: space-around;
+
+        img {
+          height: 30px;
+        }
+      }
+    }
+  }
+  .bottom {  
+    margin-top: 20px; 
+    border: 2px solid #ddd;
+    margin-bottom: 40px;
+
+    .tabs {
+      display: flex;
+      margin: 10px 0 16px 0;
+      border-bottom: 1px solid #ddd;
+      button {
+        background: none;
+        border: none;
+        padding: 8px 16px;
+        font-size: 16px;
+        cursor: pointer;
+        &.active {
+          border-bottom: 2px solid #ff8c00;
+          color: #ff8c00;
+        }
+      }
+    }
+    .tab-content {
+      .desc, .spec, .review {
+        h3 { font-size: 20px; margin-bottom: 12px; }
+        p, ul { font-size: 14px; line-height: 1.6; color: #555; }
+        ul { list-style: disc inside; margin-bottom: 16px; }
+      }
+    }
+  }
+}

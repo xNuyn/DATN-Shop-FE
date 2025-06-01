@@ -14,63 +14,125 @@ import CartShopping from "../CartShopping/index";
 import "./header.scss";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { Dropdown } from "antd";
+import { useEffect } from "react";
+import { logout } from "../../services/authService";
+import { getCategories } from "../../services/categoryService";
 
-type MenuItem = Required<MenuProps>["items"][number];
+interface Category {
+    id: number;
+    name: string;
+    parent: number | null;
+    children?: Category[];
+}
+interface CategoryItem {
+  key: string;
+  label: string;
+  children?: CategoryItem[]; // nếu không có con thì bỏ trống
+}
 
-const items: MenuItem[] = [
-    {
-        key: "all",
-        label: "All",
-        children: [],
-    },
-    {
-        key: "laptop",
-        label: "Laptop",
-        children: [
-            { key: "1", label: "Dell" },
-            { key: "2", label: "ACER" },
-            { key: "3", label: "MAC" },
-            { key: "4", label: "Asus" },
-            { key: "5", label: "HP" },
-            { key: "6", label: "Lenovo" },
-            { key: "7", label: "MSI" },
-        ],
-    },
-    {
-        key: "dt",
-        label: "SmathPhone",
-        children: [
-            { key: "1", label: "iPhone" },
-            { key: "2", label: "Samsung" },
-            { key: "3", label: "Xiaomi" },
-            { key: "4", label: "Oppo" },
-            { key: "5", label: "Vivo" },
-            { key: "6", label: "Huawei" },
-            { key: "7", label: "ROG Phone" },
-        ],
-    },
-    {
-        key: "tablet",
-        label: "Tablet",
-        children: [
-            { key: "1", label: "Apple" },
-            { key: "2", label: "Samsung" },
-            { key: "3", label: "Huawei" },
-            { key: "4", label: "Lenovo" },
-            { key: "5", label: "Microsoft" },
-            { key: "6", label: "Amazon" },
-            { key: "7", label: "Realme" },
-        ],
-    },
-];
+const buildCategoryTree = (categories: Category[] = []): Category[] => {
+    if (!Array.isArray(categories)) return [];
+
+    const map: Record<number, Category> = {};
+    const tree: Category[] = [];
+
+    categories.forEach(cat => (map[cat.id] = { ...cat, children: [] }));
+    categories.forEach(cat => {
+        if (cat.parent) {
+            map[cat.parent]?.children?.push(map[cat.id]);
+        } else {
+            tree.push(map[cat.id]);
+        }
+    });
+
+    return tree;
+};
+
+
 
 const Header: FC = memo(() => {
+
+    const { SubMenu } = Menu;
     const navigate = useNavigate();
     const location = useLocation();
     const pathname = location.pathname;
     const [openMenu, setOpenMenu] = useState(false);
-    const [openCart, setOpenCart] = useState(false);
     const [openModalSignIn, setOpenModalSignIn] = useState(false);
+    const [user, setUser] = useState<any>(null);
+    const [categoryItems, setCategoryItems] = useState<CategoryItem[]>([]);
+    const [keyword, setKeyword] = useState("");
+
+    const handleSearch = (value: string) => {
+        const trimmed = value.trim();
+        if (trimmed) {
+            console.log('trim', trimmed);
+            navigate(`/shop-page?keyword=${encodeURIComponent(trimmed)}`);
+        }
+    };
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await getCategories();
+                console.log("Categories API response:", response);
+
+                const categoryData: Category[] = response || [];
+                const tree = buildCategoryTree(categoryData);
+                const menuItems = tree.map((cat) => ({
+                    key: cat.id.toString(),
+                    label: cat.name,
+                    children: cat.children?.map((child) => ({
+                        key: child.id.toString(),
+                        label: child.name,
+                    })),
+                }));
+                setCategoryItems(menuItems);
+            } catch (err) {
+                console.error("Error fetching categories:", err);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+
+    useEffect(() => {
+        const syncUser = () => {
+            const storedUser = localStorage.getItem("user");
+            setUser(storedUser ? JSON.parse(storedUser) : null);
+        };
+
+        syncUser();
+
+        window.addEventListener("storage", syncUser);
+        return () => window.removeEventListener("storage", syncUser);
+    }, []);
+
+    const handleLogout = async () => {
+        try {
+            const refresh_token = localStorage.getItem("refresh_token");
+            if (refresh_token) {
+                await logout(refresh_token);
+            }
+        } catch (error) {
+            console.error("Logout failed:", error);
+        } finally {
+            localStorage.clear();
+            setUser(null);
+            navigate("/");
+        }
+    };
+
+    const userMenu: MenuProps["items"] = [
+        {
+            key: "1",
+            label: <span onClick={() => navigate("/account-setting")}>Account Profile</span>,
+        },
+        {
+            key: "2",
+            label: <span onClick={handleLogout}>Log out</span>,
+        },
+    ];
 
     return (
         <header className="header">
@@ -88,32 +150,43 @@ const Header: FC = memo(() => {
                         allowClear
                         size="large"
                         className="input--search"
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                        onSearch={handleSearch}
                     />
                     <Flex align="center" gap={16} className="icon--wrapper">
                         <div className="cart-wrapper" 
                             onClick={() => {
-                                setOpenCart(!openCart)
-                                setOpenModalSignIn(false)
+                                setOpenModalSignIn(false);
+                                navigate("/shopping-cart");
                             }}
                         >
                         <Badge count={5} size="small">
                             <ShoppingCart />
                         </Badge>
-                        {openCart && <CartShopping />}
                         </div>
                         <div onClick={() => navigate('/wishlist')} style={{ cursor: 'pointer' }}>
                             <Heart />
                         </div>
-                        <div
-                            onClick={() => {
-                                setOpenCart(false);
-                                setOpenModalSignIn(!openModalSignIn)
-                            }}
-                        >
-                            <UserProfile />
-                        </div>
-                        <div className="signIn-modal" hidden={!openModalSignIn}>
-                            <SignIn />
+                        <div>
+                            {user ? (
+                                <Dropdown menu={{ items: userMenu }} placement="bottomRight">
+                                <div style={{ cursor: "pointer" }}>
+                                    <UserProfile />
+                                </div>
+                                </Dropdown>
+                            ) : (
+                                <div
+                                onClick={() => {
+                                    setOpenModalSignIn(!openModalSignIn);
+                                }}
+                                >
+                                <UserProfile />
+                                </div>
+                            )}
+                            <div className="signIn-modal" hidden={!openModalSignIn}>
+                                <SignIn />
+                            </div>
                         </div>
                     </Flex>
                 </Flex>
@@ -121,24 +194,54 @@ const Header: FC = memo(() => {
             <div className="nav-header">
                 <div className="nav-header--wrapper">
                     <Flex align="flex-start" gap={12}>
-                        <Flex vertical>
+                        <Flex vertical
+                            onMouseEnter={() => setOpenMenu(true)}
+                            onMouseLeave={() => setOpenMenu(false)}
+                        >
                             <Button
-                                icon={
-                                    openMenu ? <UpOutlined /> : <DownOutlined />
-                                }
+                                icon={openMenu ? <UpOutlined /> : <DownOutlined />}
                                 iconPosition="end"
-                                onClick={() => setOpenMenu(!openMenu)}
                                 className={`category--btn ${openMenu ? "open" : ""}`}
+                                onClick={() => navigate("/shop-page")}
                             >
                                 All Categories
                             </Button>
-                            <Menu
-                                mode="vertical"
-                                items={items}
-                                hidden={!openMenu}
-                                className="category--menu"
-                            />
+
+                            {openMenu && (
+                                <Menu
+                                    mode="vertical"
+                                    className="category--menu"
+                                    triggerSubMenuAction="hover"
+                                    onClick={({ key }) => {
+                                    navigate(`/shop-page?categories=${key}`);
+                                    setOpenMenu(false);
+                                    }}
+                                >
+                                    {categoryItems.map((cat) => {
+                                    if (cat.children && cat.children.length > 0) {
+                                        return (
+                                        <SubMenu
+                                            key={cat.key}
+                                            title={cat.label}
+                                            onTitleClick={() => {
+                                            navigate(`/shop-page?categories=${cat.key}`);
+                                            setOpenMenu(false);
+                                            }}
+                                        >
+                                            {cat.children.map((child) => (
+                                            <Menu.Item key={child.key}>
+                                                {child.label}
+                                            </Menu.Item>
+                                            ))}
+                                        </SubMenu>
+                                        );
+                                    }
+                                    return <Menu.Item key={cat.key}>{cat.label}</Menu.Item>;
+                                    })}
+                                </Menu>
+                                )}
                         </Flex>
+
                         <Button
                                 className={pathname === "/track-order" ? "active-btn" : ""}
                                 type="text"

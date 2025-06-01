@@ -1,0 +1,71 @@
+.review-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.review-modal {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.review-modal__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 16px;
+}
+
+.review-modal__form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.review-modal__form-group label {
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #555;
+}
+
+.review-modal__form-group select {
+    color: #ff6600;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    resize: none;
+    outline: none;
+}
+.review-modal__form-group textarea {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  resize: none;
+  outline: none;
+}
+
+.review-modal__submit {
+  width: 100%;
+  background-color: #ff6600;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.review-modal__submit:hover {
+  background-color: #e26017;
+}

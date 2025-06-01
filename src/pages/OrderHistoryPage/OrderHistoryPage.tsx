@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import Pagination from "../../components/Pagination/Pagination";
 import "./OrderHistoryPage.scss";
 import DashboardSidebar from "../../components/DashboardSidebar/DashboardSidebar";
+import ReviewModal from '../../components/ReviewModal/ReviewModal';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const orders = [
   { id: "#96459761", status: "IN PROGRESS", date: "Dec 30, 2019 07:52", total: "$80 (5 Products)" },
@@ -20,6 +23,16 @@ const orders = [
 
 const OrderHistoryPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
+  useEffect(() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+      }, [currentPage]);
+  const [showModal, setShowModal] = useState(false);
+  const handleReviewSubmit = (data: { rating: number; feedback: string }) => {
+    console.log('Review Submitted:', data);
+    // Gọi API ở đây nếu cần
+  };
+
   const ordersPerPage = 8;
   const totalPages = Math.ceil(orders.length / ordersPerPage);
 
@@ -44,7 +57,7 @@ const OrderHistoryPage: React.FC = () => {
   return (
     <div className="order-history-page">
       <div className="sidebar">
-        <DashboardSidebar selected="Order History" />
+        <DashboardSidebar/>
       </div>
 
       <div className="main-content">
@@ -69,7 +82,13 @@ const OrderHistoryPage: React.FC = () => {
                 <td>{order.date}</td>
                 <td>{order.total}</td>
                 <td>
-                  <a href="#" className="view-details">
+                  <a href="#" className="view-details"
+                    onClick={(e) => {
+                    navigate("/order-detail")
+                    e.preventDefault();
+                    setShowModal(true);
+                  }}
+                  >
                     View Details →
                   </a>
                 </td>
@@ -77,7 +96,11 @@ const OrderHistoryPage: React.FC = () => {
             ))}
           </tbody>
         </table>
-
+        <ReviewModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSubmit={handleReviewSubmit}
+        />
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

@@ -3,12 +3,14 @@ import './Signup.scss';
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { register } from '../../services/authService';
 
 const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    full_name:'',
     password: '',
     confirmPassword: '',
     agreed: false,
@@ -25,10 +27,33 @@ const Signup = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
-    // Xử lý đăng ký tại đây
+
+    if (!formData.agreed) {
+      alert('Bạn phải đồng ý với điều khoản.');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      alert('Mật khẩu xác nhận không khớp.');
+      return;
+    }
+
+    try {
+      const res = await register({
+        username: formData.name,
+        email: formData.email,
+        password: formData.password,
+        full_name: formData.full_name,
+      });
+
+      console.log("Đăng ký thành công:", res);
+      navigate("/");
+    } catch (error: any) {
+      console.error("Lỗi khi đăng ký:", error.response?.data?.detail || error.message);
+      alert("Đăng ký thất bại. Vui lòng thử lại.");
+    }
   };
 
   return (
@@ -39,7 +64,8 @@ const Signup = () => {
           <button className="active">Sign Up</button>
         </div>
         <form className="signup-form" onSubmit={handleSubmit}>
-          <input type="text" name="name" placeholder="Name" onChange={handleChange} required />
+          <input type="text" name="name" placeholder="Username" onChange={handleChange} required />
+          <input type="text" name="full_name" placeholder="Full Name" onChange={handleChange} required />
           <input type="email" name="email" placeholder="Email Address" onChange={handleChange} required />
 
           <div className="signup-password-input-wrapper">

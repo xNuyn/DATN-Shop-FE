@@ -54,7 +54,7 @@ const WishlistPage: React.FC = () => {
   return (
     <div className="wishlist-page">
       <div className="sidebar">
-        <DashboardSidebar selected="Wishlist" />
+        <DashboardSidebar/>
       </div>
       <div className="main-content">
         <h2>Wishlist</h2>

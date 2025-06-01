@@ -50,12 +50,10 @@ const AccountSettingPage: React.FC = () => {
   return (
     <div className="account-setting-page">
       <div className="sidebar">
-        <DashboardSidebar selected="Settings" />
+        <DashboardSidebar/>
       </div>
 
       <div className="main-content">
-        <h2>Account Settings</h2>
-
         <div className="section account-info">
           <h3>Account Setting</h3>
           <div className="profile-box">

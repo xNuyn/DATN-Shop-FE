@@ -1,9 +1,11 @@
+import React from "react";
 import { Input, Button, Form, Typography, Row, Col, message } from "antd";
 import "./TrackOrder.scss";
+import DashboardSidebar from "../../components/DashboardSidebar/DashboardSidebar";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
-const TrackOrder = () => {
+const TrackOrder: React.FC = () => {
   const [form] = Form.useForm();
 
   const handleSubmit = (values: any) => {
@@ -15,49 +17,53 @@ const TrackOrder = () => {
 
   return (
     <div className="track-order-page">
-      <Title level={3}>Track Order</Title>
-      <Text className="description">
-        To track your order please enter your order ID in the input field below and press the “Track Order” button.
-        This was given to you on your receipt and in the confirmation email you should have received.
-      </Text>
+      <div className="sidebar">
+        <DashboardSidebar/>
+      </div>
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        className="track-order-form"
-      >
-        <Row gutter={16}>
-          <Col xs={24} md={12}>
-            <Form.Item
-              name="orderId"
-              label="Order ID"
-              rules={[{ required: true, message: "Please enter Order ID" }]}
-            >
-              <Input placeholder="ID..." />
-            </Form.Item>
-          </Col>
+      <div className="main-content">
+        <h2>Track Order</h2>
+        <Text className="description">
+          To check the status of your order, please enter your Order ID and email address in the boxes below, then click on the 
+          “Track Order” button. You can find your Order ID and email address in the confirmation email we sent you right after you 
+          completed your order. The system will check and display the latest information update about your order, including the 
+          current status, operating location and expected delivery time. If you encounter any difficulties during the research 
+          process, do not hesitate to contact our customer service for support.
+        </Text>
 
-          <Col xs={24} md={12}>
-            <Form.Item
-              name="email"
-              label="Billing Email"
-              rules={[
-                { required: true, message: "Please enter your billing email" },
-                { type: "email", message: "Please enter a valid email" },
-              ]}
-            >
-              <Input placeholder="Email address" />
-            </Form.Item>
-          </Col>
-        </Row>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          className="track-order-form"
+        >
+          <Row gutter={16}>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="orderId"
+                label="Order ID"
+                rules={[{ required: true, message: "Please enter Order ID" }]}
+              >
+                <Input placeholder="Order ID..." />
+              </Form.Item>
+            </Col>
 
-        <div className="form-footer">
-          <Button type="primary" htmlType="submit" size="large">
-            TRACK ORDER →
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="email"
+                label="Email Address"
+                rules={[{ required: true, message: "Please enter your email" }]}
+              >
+                <Input placeholder="you@example.com" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Button type="primary" htmlType="submit" className="btn-track">
+            Track Order
           </Button>
-        </div>
-      </Form>
+        </Form>
+      </div>
     </div>
   );
 };

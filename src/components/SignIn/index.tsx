@@ -19,6 +19,7 @@ const SignIn: FC = () => {
                         layout="vertical"
                         label="Email Address"
                         name="email"
+                        required
                     >
                         <Input placeholder="Email Address" />
                     </Form.Item>
@@ -26,6 +27,7 @@ const SignIn: FC = () => {
                         layout="vertical"
                         label="Password"
                         name="password"
+                        required
                     >
                         <Input.Password placeholder="Password" />
                     </Form.Item>
@@ -40,7 +42,6 @@ const SignIn: FC = () => {
                     <Typography.Text className="description">
                         Don't have account
                     </Typography.Text>
-                    {/* <Button onClick={() => navigate("/signup")} block>CREATE ACCOUNT</Button> */}
                     <Button
                         onClick={() => {
                             setOpenSignIn(false);

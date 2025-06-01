@@ -1,0 +1,119 @@
+.order-detail-page {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fc;
+
+  .sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    border-right: 1px solid #e0e0e0;
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 0px 0px 10px 40px;
+    background-color: #fff;
+    color: #333;
+    font-family: 'Arial', sans-serif;
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .status-steps {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+
+      .step {
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        background-color: #eee;
+        font-weight: 500;
+        color: #555;
+
+        &.active {
+          background-color: #ff6600;
+          color: white;
+        }
+
+        &.canceled.active {
+          background-color: #dc3545;
+          color: white;
+        }
+      }
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+
+      th, td {
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      th {
+        font-size: 0.875rem;
+        color: #666;
+      }
+
+      .product-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        img {
+          width: 50px;
+          height: 50px;
+          object-fit: cover;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+
+        .category {
+          font-size: 0.75rem;
+          color: #007bff;
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.875rem;
+        }
+      }
+    }
+
+    .info-section {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 2rem;
+
+      .info-box {
+        flex: 1;
+        min-width: 250px;
+
+        h4 {
+          font-size: 1rem;
+          margin-bottom: 0.5rem;
+        }
+
+        p {
+          margin: 0.25rem 0;
+          font-size: 0.875rem;
+          color: #444;
+        }
+      }
+    }
+  }
+}

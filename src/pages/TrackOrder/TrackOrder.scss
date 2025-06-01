@@ -1,56 +1,57 @@
 .track-order-page {
-  max-width: 1280px;
-  margin: 40px auto;
-  background: #fff;
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fc;
 
-  .description {
-    display: block;
-    margin-bottom: 24px;
-    font-size: 16px;
-    color: #666;
+  .sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    border-right: 1px solid #e0e0e0;
   }
 
-  .track-order-form {
-    .ant-form-item-label > label {
-      font-weight: 500;
+  .main-content {
+    flex: 1;
+    padding: 0px 0px 10px 40px;
+    background-color: #fff;
+
+    h2 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 30px;
+      color: #333;
     }
 
-    .form-footer {
-      margin-top: 20px;
-    }
-
-    button {
+    .description {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 20px;
+      color: #555;
       width: 100%;
-      max-width: 200px;
+      // max-width: 800px;
     }
-  }
-  .ant-btn-primary {
-    background-color: #ff6600;
-    border-color: #ff6600;
-    color: white;
-    font-weight: 600;
-    width: 100%;
-    height: 40px;
-    margin-bottom: 10px;
 
-    &:hover {
-      background-color: #e26017 !important;
-      border-color: #e26017 !important;
-    }
-  }
+    .track-order-form {
+      // max-width: 800px;
+      width: 100%;
 
-  .ant-btn-default {
-    background-color: white;
-    border: 1px solid #ff6600;
-    color: #ff6600;
-    font-weight: 600;
-    width: 100%;
-    height: 40px;
+      .ant-form-item {
+        margin-bottom: 20px;
+      }
 
-    &:hover {
-      background-color: #e26017;
-      border-color: #e26017 !important;
-      color: #e26017 !important;
+      .btn-track {
+        margin-top: 20px;
+        background-color: #ff6600;
+        color: white;
+        font-weight: 500;
+        padding: 10px 24px;
+        border-radius: 8px;
+        border: none;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: #e26017;
+        }
+      }
     }
   }
 }

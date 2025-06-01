@@ -1,0 +1,247 @@
+.homepage {
+  .category-carousel {
+    margin-bottom: 20px;
+    text-align: center;
+
+    .carousel-title {
+      font-size: 24px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .carousel-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+
+      .carousel-button {
+        background-color: orange;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+
+        &.left {
+          margin-right: 10px;
+        }
+
+        &.right {
+          margin-left: 10px;
+        }
+      }
+
+      .carousel-items {
+        width: 90%;
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        justify-content: space-between;
+        padding: 10px 0;
+
+        .carousel-item {
+          background: #fff;
+          border: 1px solid #eee;
+          border-radius: 8px;
+          width: 200px;
+          padding: 10px;
+          box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+          text-align: center;
+
+          img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 8px;
+          }
+
+          p {
+            font-size: 14px;
+            color: #333;
+          }
+        }
+      }
+    }
+  }
+}
+
+.promo-banner {
+  display: flex;
+  justify-content: space-between;
+//   padding: 20px;
+  background: #fff;
+  margin-bottom: 40px;
+  gap: 20px;
+
+  .promo-left {
+    position: relative;
+    flex: 2;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    .promo-content {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+
+      h4 {
+        color: #00bfff;
+        margin: 0;
+      }
+
+      .promo-title {
+        font-size: 28px;
+        margin: 10px 0;
+      }
+
+      .promo-description {
+        margin-bottom: 10px;
+      }
+
+      .promo-button {
+        background: #bf0606;
+        border: none;
+        padding: 10px 20px;
+        color: white;
+        font-weight: bold;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 150px;
+        margin-left: 15px;
+
+        &:hover {
+            background: #ff0000;
+        }
+      }
+    }
+
+    .promo-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://nhatkhanhtech.com/wp-content/uploads/2019/10/Banner-gaming_laptops.jpg');
+      background-size: cover;
+      background-position: center;
+    //   opacity: 0.9;
+      z-index: 1;
+    }
+
+    .promo-price {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #00bfff;
+      color: white;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      z-index: 2;
+    }
+  }
+
+  .promo-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .promo-card {
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      padding: 10px;
+      height: 200px;
+      color: white;
+      display: flex;
+      align-items: flex-end;
+      border-radius: 8px;
+      overflow: hidden;
+
+      &.pixel {
+        background-image: url('https://files.virgool.io/upload/users/253939/posts/wud2jipofd8i/hva1dx0cboq3.jpeg');
+      }
+
+      &.xiaomi {
+        background-image: url('https://www.xtmobile.vn/vnt_upload/news/08_2019/19/ro-ri-anh-poster-va-anh-thuc-te-cua-the-he-galaxy-s20-sap-ra-mat-xtmobile-banner.jpg');
+      }
+
+      .promo-sale-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #ffc107;
+        color: black;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: bold;
+        border-radius: 4px;
+        z-index: 2;
+      }
+
+      .promo-card-content {
+        z-index: 2;
+        background-color: rgba(0, 0, 0, 0.4);
+        padding: 10px;
+        border-radius: 4px;
+        width: 100%;
+        text-align: center;
+
+        p {
+          font-size: 16px;
+          margin-bottom: 10px;
+
+          .blue {
+            color: #00bfff;
+          }
+        }
+
+        button {
+          background: orange;
+          border: none;
+          padding: 8px 16px;
+          color: white;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+.promo-video1 {
+  background-color: white;
+  padding: 0px;
+  .video-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    video {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+  }
+}
+
+.promo-video {
+  margin-bottom: 40px;
+  .video-wrapper {
+    max-width: 100%;
+    video {
+      width: 100%;
+      height: auto;
+    }
+  }
+}

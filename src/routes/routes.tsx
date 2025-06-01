@@ -9,6 +9,13 @@ import NeedHelp from '../pages/NeedHelp/NeedHelp';
 import OrderHistoryPage from '../pages/OrderHistoryPage/OrderHistoryPage';
 import AccountSettingPage from '../pages/AccountSetting/AccountSettingPage';
 import WishlistPage from '../pages/WishlistPage/WishlistPage';
+import Compare from '../pages/Compare/Compare';
+import ShoppingCart from '../pages/ShoppingCart/ShoppingCart';
+import ShopPage from '../pages/ShopPage/ShopPage';
+import ProductDetail from '../pages/ProductDetail/ProductDetail';
+import Checkout from '../pages/Checkout/Checkout';
+import OrderSuccessPage from '../pages/SuccessPage/OrderSuccessPage';
+import OrderDetailPage from '../pages/OrderDetail/OrderDetailPage';
 
 export default function RouteComponent() {
     const routeElements = useRoutes([
@@ -16,7 +23,7 @@ export default function RouteComponent() {
             path: '/',
             element: (
                 <PrimaryLayout>
-                    <HomePage />
+                    <HomePage/>
                 </PrimaryLayout>
             ),
         },
@@ -53,9 +60,18 @@ export default function RouteComponent() {
             ),
         },
         {
+            path: '/order-detail',
+            element: (
+                <PrimaryLayout>
+                    <OrderDetailPage/>
+                </PrimaryLayout>
+            ),
+        },
+        {
             path: '/compare',
             element: (
                 <PrimaryLayout>
+                    <Compare/>
                 </PrimaryLayout>
             ),
         },
@@ -95,6 +111,46 @@ export default function RouteComponent() {
             element: (
                 <PrimaryLayout>
                     <WishlistPage/>
+                </PrimaryLayout>
+            ),
+        },
+        {
+            path: '/shopping-cart',
+            element: (
+                <PrimaryLayout>
+                    <ShoppingCart/>
+                </PrimaryLayout>
+            ),
+        },
+        {
+            path: '/shop-page',
+            element: (
+                <PrimaryLayout>
+                    <ShopPage/>
+                </PrimaryLayout>
+            ),
+        },
+        {
+            path: '/product-detail',
+            element: (
+                <PrimaryLayout>
+                    <ProductDetail/>
+                </PrimaryLayout>
+            ),
+        },
+        {
+            path: '/checkout',
+            element: (
+                <PrimaryLayout>
+                    <Checkout/>
+                </PrimaryLayout>
+            ),
+        },
+        {
+            path: '/success',
+            element: (
+                <PrimaryLayout>
+                    <OrderSuccessPage/>
                 </PrimaryLayout>
             ),
         },

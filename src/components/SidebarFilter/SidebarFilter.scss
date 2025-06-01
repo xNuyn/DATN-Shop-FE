@@ -1,0 +1,115 @@
+.sidebar-filter {
+    background: #fff;
+    padding: 16px;
+    border: 1px solid #eee;
+    font-family: Arial, sans-serif;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    .filter-section {
+        margin-bottom: 24px;
+
+        h5 {
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+    }
+
+    .ant-checkbox-wrapper,
+    .ant-radio-wrapper {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 8px;
+        transition: all 0.2s ease;
+
+        &:hover {
+            color: #ff6600;
+        }
+    }
+
+    .ant-checkbox-inner {
+        width: 16px;
+        height: 16px;
+        border-color: #ff6600;
+
+        &:hover {
+            border-color: #e26017;
+        }
+    }
+
+    .ant-checkbox-checked .ant-checkbox-inner {
+        background-color: #ff6600;
+        border-color: #ff6600;
+    }
+
+    .ant-checkbox-wrapper:hover .ant-checkbox-inner {
+        border-color: #e26017;
+    }
+
+    .ant-radio-inner {
+        width: 16px;
+        height: 16px;
+        border-color: #ff6600;
+
+        &:hover {
+            border-color: #e26017;
+        }
+    }
+
+    .ant-radio-checked .ant-radio-inner {
+        background-color: #ff6600;
+        border-color: #ff6600;
+    }
+
+    .ant-radio-wrapper:hover .ant-radio-inner {
+        border-color: #e26017;
+    }
+
+    .price-radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    // Responsive
+    @media (max-width: 768px) {
+        padding: 12px;
+
+        .filter-section {
+            margin-bottom: 16px;
+
+            h5 {
+                font-size: 16px;
+            }
+
+            .ant-checkbox-wrapper,
+            .ant-radio-wrapper {
+                font-size: 13px;
+            }
+        }
+    }
+}
+.active-filters {
+    margin-bottom: 24px;
+
+    .ant-typography {
+        margin-bottom: 8px;
+        // color: #e26017;
+    }
+
+    .ant-tag {
+        background-color: #fff5e6;
+        border: 1px solid #ff6600;
+        // color: #e26017;
+        font-weight: 500;
+        border-radius: 4px;
+
+        .anticon-close {
+            color: #fff;
+
+            &:hover {
+                color: #ff0000;
+            }
+        }
+    }
+}

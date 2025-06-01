@@ -1,20 +1,27 @@
 .pagination {
-  margin-top: 20px;
+  margin-top: 32px;
   display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 8px;
 
   .page, .arrow {
-    padding: 6px 12px;
-    background: #f8f8f8;
-    border: 1px solid #ddd;
+    padding: 8px 14px;
+    background: #f5f5f5;
+    border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 14px;
     cursor: pointer;
-    font-weight: 500;
+    transition: 0.3s;
 
     &.active {
-      background: #ff6600;
-      color: white;
+      background-color: #ff6600;
+      color: #fff;
       border-color: #ff6600;
+    }
+
+    &:hover:not(:disabled) {
+      background-color: #e6e6e6;
     }
 
     &:disabled {

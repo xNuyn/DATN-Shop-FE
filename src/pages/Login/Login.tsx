@@ -3,16 +3,32 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import "./Login.scss";
+import { login } from "../../services/authService";
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ email, password });
+
+    try {
+      const data = await login({ usernameOrEmail: email, password });
+
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      window.dispatchEvent(new Event("storage"));
+
+      navigate("/");
+    } catch (err: any) {
+      const message =
+        err.response?.data?.detail || "Đã xảy ra lỗi trong quá trình đăng nhập";
+      setErrorMessage(message);
+    }
   };
 
   return (
@@ -26,9 +42,9 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="login-form">
           <label>Email Address</label>
           <input
-            type="email"
+            type="text"
             value={email}
-            placeholder="Enter your email"
+            placeholder="Username or Email"
             onChange={(e) => setEmail(e.target.value)}
             required
           />
@@ -52,6 +68,8 @@ const Login = () => {
               <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
             </span>
           </div>
+
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
 
           <button type="submit" className="sign-in-btn">SIGN IN →</button>
         </form>
