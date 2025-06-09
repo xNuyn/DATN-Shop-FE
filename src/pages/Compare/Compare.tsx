@@ -1,110 +1,32 @@
 import './Compare.scss';
 import DashboardSidebar from "../../components/DashboardSidebar/DashboardSidebar";
+import { useEffect, useState } from "react";
+import { getMyCompareProducts, softDeleteCompareProduct  } from "../../services/compareService";
+import { addToCart } from "../../services/cartService";
 
 interface Product {
+  compareProductId: number;
+  subProductId: number;
   image: string;
   title: string;
   rating: number;
   ratingCount: string;
   price: string;
-  soldBy: string;
+  color: string;
   brand: string;
   model: string;
   status: 'IN STOCK' | 'OUT OF STOCK';
   size: string;
-  weight: string;
 }
-
-const products: Product[] = [
-  {
-    image: 'https://cdn.tgdd.vn/Products/Images/42/323567/vivo-v30e-nau-thumb-1-600x600.jpg',
-    title: 'Gamdias ARES M2 Gaming Keyboard, Mouse and Mouse Mat Combo',
-    rating: 5,
-    ratingCount: '51,746,385',
-    price: '$899.00',
-    soldBy: 'Clicon',
-    brand: 'StarTech',
-    model: 'ARES M2 and ZEUS E2',
-    status: 'IN STOCK',
-    size: '6.71 inches, 110.5 cm',
-    weight: '650 g (7.41 oz)',
-  },
-  {
-    image: 'https://cdn.tgdd.vn/Products/Images/42/323567/vivo-v30e-nau-thumb-1-600x600.jpg',
-    title: 'Apple iMac 24" 4K Retina Display M1 8 Core CPU, 256GB SSD, Blue',
-    rating: 5,
-    ratingCount: '673,971,743',
-    price: '$1,699.00',
-    soldBy: 'Apple',
-    brand: 'Apple',
-    model: 'iMac 24” M1 Blue 2021',
-    status: 'IN STOCK',
-    size: '6.7 inches, 109.8 cm',
-    weight: '240 g (8.47 oz)',
-  },
-  {
-    image: 'https://cdn.tgdd.vn/Products/Images/42/323567/vivo-v30e-nau-thumb-1-600x600.jpg',
-    title: 'Samsung Galaxy S21 FE 5G Cell Phone, 128GB, 120Hz Display',
-    rating: 4.5,
-    ratingCount: '96,459,761',
-    price: '$699.99',
-    soldBy: 'Clicon',
-    brand: 'Samsung',
-    model: 'S21 FE',
-    status: 'OUT OF STOCK',
-    size: '6.4 inches, 98.9 cm',
-    weight: '177 g (6.24 oz)',
-  },
-  {
-    image: 'https://cdn.tgdd.vn/Products/Images/42/323567/vivo-v30e-nau-thumb-1-600x600.jpg',
-    title: 'Gamdias ARES M2 Gaming Keyboard, Mouse and Mouse Mat Combo',
-    rating: 5,
-    ratingCount: '51,746,385',
-    price: '$899.00',
-    soldBy: 'Clicon',
-    brand: 'StarTech',
-    model: 'ARES M2 and ZEUS E2',
-    status: 'IN STOCK',
-    size: '6.71 inches, 110.5 cm',
-    weight: '650 g (7.41 oz)',
-  },
-  {
-    image: 'https://cdn.tgdd.vn/Products/Images/42/323567/vivo-v30e-nau-thumb-1-600x600.jpg',
-    title: 'Apple iMac 24" 4K Retina Display M1 8 Core CPU, 256GB SSD, Blue',
-    rating: 5,
-    ratingCount: '673,971,743',
-    price: '$1,699.00',
-    soldBy: 'Apple',
-    brand: 'Apple',
-    model: 'iMac 24” M1 Blue 2021',
-    status: 'IN STOCK',
-    size: '6.7 inches, 109.8 cm',
-    weight: '240 g (8.47 oz)',
-  },
-  {
-    image: 'https://cdn.tgdd.vn/Products/Images/42/323567/vivo-v30e-nau-thumb-1-600x600.jpg',
-    title: 'Samsung Galaxy S21 FE 5G Cell Phone, 128GB, 120Hz Display',
-    rating: 4.5,
-    ratingCount: '96,459,761',
-    price: '$699.99',
-    soldBy: 'Clicon',
-    brand: 'Samsung',
-    model: 'S21 FE',
-    status: 'OUT OF STOCK',
-    size: '6.4 inches, 98.9 cm',
-    weight: '177 g (6.24 oz)',
-  },
-];
 
 const fieldLabels = [
   'Customer feedback',
   'Price',
-  'Sold by',
+  'Color',
   'Brand',
   'Model',
+  'ROM',
   'Stock status',
-  'Size',
-  'Weight',
 ];
 
 const chunkArray = <T,>(arr: T[], size: number): T[][] => {
@@ -116,7 +38,67 @@ const chunkArray = <T,>(arr: T[], size: number): T[][] => {
 };
 
 const Compare = () => {
+  const [products, setProducts] = useState<Product[]>([]);
   const productChunks = chunkArray(products, 3);
+  const filteredFieldLabels = fieldLabels.filter(label => {
+  if (label === 'ROM') {
+    return products.some(product => product.size && product.size.trim() !== '');
+  }
+  return true;
+});
+
+
+  const extractModel = (specification: string): string | null => {
+    const match = specification.match(/Model:\s*([^,]+)/i);
+    return match ? match[1].trim() : null;
+  };
+
+
+  useEffect(() => {
+    getMyCompareProducts().then(apiData => {
+      const formatted: Product[] = apiData.map((item: any) => {
+        const sub = item.sub_product;
+        const prod = sub.product;
+        return {
+          compareProductId: item.id,
+          subProductId: sub.id,
+          image: sub.image,
+          title: prod.name,
+          rating: 4.5, // nếu có rating thực tế thì thay vào
+          ratingCount: prod.sold_per_month.toLocaleString(),
+          price: `${sub.price.toLocaleString('en-US', { maximumFractionDigits: 2 })} VNĐ`,  
+          color: sub.color,
+          brand: prod.brand,
+          model: extractModel(sub.specification) || "",
+          status: sub.stock > 0 ? "IN STOCK" : "OUT OF STOCK",
+          size: sub.size,
+        };
+      });
+
+      setProducts(formatted);
+    }).catch(err => {
+      console.error("Error fetching compare products:", err);
+    });
+  }, []);
+
+  const handleRemove = async (compareProductId: number) => {
+    try {
+      await softDeleteCompareProduct(compareProductId);
+      setProducts(prev => prev.filter(p => p.compareProductId !== compareProductId));
+    } catch (err) {
+      console.error("Error removing product:", err);
+    }
+  };
+
+  const handleAddToCart = async (subProductId: number) => {
+      try {
+        await addToCart(subProductId, 1);
+        alert("Đã thêm vào giỏ hàng!");
+      } catch (error) {
+        console.error("Lỗi khi thêm vào giỏ hàng:", error);
+        alert("Sản phẩm đã có trong giỏ hàng.");
+      }
+    };
 
   return (
     <div className='compare-page'>
@@ -134,6 +116,7 @@ const Compare = () => {
                 {chunk.map((product, idx) => (
                   <th key={idx}>
                     <div className="product-cell">
+                      <button className="remove-button" onClick={() => handleRemove(product.compareProductId)}>✖</button>
                       <div className="product-image">
                         <img src={product.image} alt={product.title} />
                       </div>
@@ -144,6 +127,7 @@ const Compare = () => {
                         <button
                           className={`add-to-cart ${product.status === 'OUT OF STOCK' ? 'disabled' : ''}`}
                           disabled={product.status === 'OUT OF STOCK'}
+                          onClick={() => handleAddToCart(product.subProductId)}
                         >
                           ADD TO CART 🛒
                         </button>
@@ -154,7 +138,7 @@ const Compare = () => {
               </tr>
             </thead>
             <tbody>
-              {fieldLabels.map((label, i) => (
+              {filteredFieldLabels.map((label, i) => (
                 <tr key={i}>
                   <td className="label-cell">{label}</td>
                   {chunk.map((product, idx) => {
@@ -166,8 +150,8 @@ const Compare = () => {
                       case 'Price':
                         content = product.price;
                         break;
-                      case 'Sold by':
-                        content = product.soldBy;
+                      case 'Color':
+                        content = product.color;
                         break;
                       case 'Brand':
                         content = product.brand;
@@ -175,14 +159,11 @@ const Compare = () => {
                       case 'Model':
                         content = product.model;
                         break;
-                      case 'Stock status':
-                        content = product.status;
-                        break;
-                      case 'Size':
+                      case 'ROM':
                         content = product.size;
                         break;
-                      case 'Weight':
-                        content = product.weight;
+                      case 'Stock status':
+                        content = product.status;
                         break;
                       default:
                         content = '';

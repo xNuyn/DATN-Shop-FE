@@ -1,0 +1,202 @@
+// src/pages/Admin/CategoryList/CategoriesList.scss
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+
+  .categories-list {
+    flex: 1;
+    padding: 2rem;
+    background-color: #f8f8f8;
+    overflow-y: auto;
+
+    h2 {
+      font-size: 1.5rem;
+      color: #505480;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+    }
+
+    .highlight-cards {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      -webkit-overflow-scrolling: touch;
+
+      &::-webkit-scrollbar {
+        height: 6px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+      }
+
+      .card {
+        flex: 0 0 200px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+
+        h4 {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #1d1f3c;
+          margin: 0;
+        }
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        &.active {
+          border: 2px solid #ff6b35;
+        }
+      }
+    }
+
+    .table-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        .controls {
+          display: flex;
+          gap: 0.5rem;
+
+          .add-btn {
+            background: #ff6b35;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+
+            &:hover {
+              background: #e65a26;
+            }
+          }
+
+          select {
+            padding: 0.5rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+          }
+        }
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+          padding: 1rem;
+          border-bottom: 1px solid #eee;
+          text-align: left;
+          font-size: 0.95rem;
+        }
+
+        th {
+          background-color: #f0f0f5;
+          color: #666;
+          font-weight: 600;
+        }
+
+        .cat {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+
+          img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 6px;
+          }
+
+          span {
+            word-break: break-word;
+          }
+        }
+
+        .actions {
+          display: flex;
+          gap: 0.4rem;
+
+          button {
+            border: none;
+            padding: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            background: none;
+            transition: transform 0.2s;
+
+            &.view {
+              color: #6c63ff;
+            }
+            &.edit {
+              color: #f39c12;
+            }
+            &.delete {
+              color: #e74c3c;
+            }
+
+            &:hover {
+              transform: scale(1.1);
+            }
+          }
+        }
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.4rem;
+        padding-top: 1rem;
+
+        button {
+          border: 1px solid #ddd;
+          padding: 0.4rem 0.8rem;
+          background: #fff;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: 500;
+
+          &.active {
+            background-color: #ff6b35;
+            color: #fff;
+            border-color: #ff6b35;
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+
+          &:hover:not(.active):not(:disabled) {
+            background-color: #f2f2f2;
+          }
+        }
+      }
+    }
+  }
+}

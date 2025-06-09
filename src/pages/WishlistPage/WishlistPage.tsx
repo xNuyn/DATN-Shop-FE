@@ -1,60 +1,73 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./WishlistPage.scss";
 import DashboardSidebar from "../../components/DashboardSidebar/DashboardSidebar";
+import { getWishlist, softDeleteWishlistItem } from "../../services/wishlistService";
+import { addToCart } from "../../services/cartService";
+import { useNavigate } from "react-router-dom";
+
+interface WishlistItem { 
+  id: number;
+  sub_product: {
+    id: number;
+    product: {
+      id: number;
+      name: string;
+      description: string;
+      image: string;
+    };
+    image: string;
+    old_price: number;
+    price: number;
+    size: string;
+    color: string;
+    stock: number;
+  };
+}
 
 const WishlistPage: React.FC = () => {
-  const wishlistItems = [
-    {
-      id: 1,
-      name: "Bose Sport Earbuds",
-      description: "Wireless Earphones - Bluetooth In Ear Headphones for Workouts and Running, Triple Black",
-      image: "https://cdn.tgdd.vn/Products/Images/44/335362/macbook-air-13-inch-m4-xanh-da-troi-600x600.jpg",
-      originalPrice: 1299,
-      salePrice: 999,
-      inStock: true,
-    },
-    {
-      id: 2,
-      name: "Simple Mobile 5G LTE Galaxy 12 Mini",
-      description: "512GB Gaming Phone",
-      image: "https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/44/311178/asus-vivobook-go-15-e1504fa-r5-nj776w-140225-100949-251-600x600.jpg",
-      originalPrice: 2300,
-      salePrice: 2300,
-      inStock: true,
-    },
-    {
-      id: 3,
-      name: "Portable Washing Machine",
-      description: "11lbs capacity Model 18NMF1AM",
-      image: "https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/44/333886/dell-inspiron-15-3520-i5-n5i5057w1-638774726911323154-600x600.jpg",
-      originalPrice: 70,
-      salePrice: 70,
-      inStock: true,
-    },
-    {
-      id: 4,
-      name: "TOZO T6 True Wireless Earbuds",
-      description: "Bluetooth Headphones Touch Control with Wireless Charging Case IPX8 Waterproof",
-      image: "https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/44/333430/acer-nitro-v-15-anv15-41-r2up-r5-nhqpgsv004-638774737367845195-600x600.jpg",
-      originalPrice: 250,
-      salePrice: 220,
-      inStock: false,
-    },
-    {
-      id: 5,
-      name: "Wyze Cam Pan v2",
-      description: "1080p Pan/Tilt/Zoom Wi-Fi Indoor Smart Home Camera with Color Night Vision, 2-Way Audio",
-      image: "https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/44/326049/hp-245-g10-r5-a20tdpt-170225-110347-587-600x600.jpg",
-      originalPrice: 1499.99,
-      salePrice: 1499.99,
-      inStock: true,
-    },
-  ];
+  const navigate = useNavigate();
+  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+
+  const handleAddToCart = async (subProductId: number) => {
+    try {
+      await addToCart(subProductId, 1);
+      alert("Đã thêm vào giỏ hàng!");
+    } catch (error) {
+      console.error("Lỗi khi thêm vào giỏ hàng:", error);
+      alert("Sản phẩm đã có trong giỏ hàng.");
+    }
+  };
+
+  const handleRemoveFromWishlist = async (wishlistId: number) => {
+    try {
+      await softDeleteWishlistItem(wishlistId);
+      setWishlistItems((prevItems) =>
+        prevItems.filter((item) => item.id !== wishlistId)
+      );
+      alert("Đã xóa khỏi wishlist!");
+    } catch (error) {
+      console.error("Lỗi khi xóa wishlist:", error);
+      alert("Xóa khỏi wishlist thất bại.");
+    }
+  };
+
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      try {
+        const data = await getWishlist();
+        setWishlistItems(data);
+      } catch (error) {
+        console.error("Lỗi khi lấy wishlist:", error);
+      }
+    };
+
+    fetchWishlist();
+  }, []);
 
   return (
     <div className="wishlist-page">
       <div className="sidebar">
-        <DashboardSidebar/>
+        <DashboardSidebar />
       </div>
       <div className="main-content">
         <h2>Wishlist</h2>
@@ -70,33 +83,34 @@ const WishlistPage: React.FC = () => {
             </thead>
             <tbody>
               {wishlistItems.map((item) => (
-                <tr key={item.id}>
+                <tr key={item.id} style={{ cursor: "pointer" }} onClick={() => navigate(`/product-detail/${item.sub_product.product.id}`)}>
                   <td className="product-cell">
-                    <img src={item.image} alt={item.name} />
+                    <img src={item.sub_product.image} alt={item.sub_product.product.name} />
                     <div className="product-info">
-                      <strong>{item.name}</strong>
-                      <p>{item.description}</p>
+                      <strong>{item.sub_product.product.name}</strong>
+                      <p>{item.sub_product.color} - {item.sub_product.size}</p>
                     </div>
                   </td>
                   <td className="price-cell">
-                    {item.originalPrice !== item.salePrice && (
-                      <span className="original-price">${item.originalPrice}</span>
+                    {(item.sub_product.old_price !== 0 && item.sub_product.old_price !== item.sub_product.price) && (
+                      <div className="original-price">{item.sub_product.old_price.toLocaleString('en-US', { maximumFractionDigits: 2 })} VNĐ</div>
                     )}
-                    <span className="sale-price">${item.salePrice}</span>
+                    <div className="sale-price">{item.sub_product.price.toLocaleString('en-US', { maximumFractionDigits: 2 })} VNĐ</div>
                   </td>
                   <td>
-                    <span className={item.inStock ? "in-stock" : "out-of-stock"}>
-                      {item.inStock ? "IN STOCK" : "OUT OF STOCK"}
+                    <span className={item.sub_product.stock > 0 ? "in-stock" : "out-of-stock"}>
+                      {item.sub_product.stock > 0 ? "IN STOCK" : "OUT OF STOCK"}
                     </span>
                   </td>
                   <td className="actions-cell">
                     <button
-                      className={`btn-add ${item.inStock ? "" : "disabled"}`}
-                      disabled={!item.inStock}
+                      className={`btn-add ${item.sub_product.stock <= 0 ? "disabled" : ""}`}
+                      disabled={item.sub_product.stock <= 0}
+                      onClick={(e) => {e.stopPropagation(); handleAddToCart(item.sub_product.id)}}
                     >
                       ADD TO CART 🛒
                     </button>
-                    <button className="btn-remove">✕</button>
+                    <button className="btn-remove" onClick={(e) => {e.stopPropagation(); handleRemoveFromWishlist(item.id)}}>✕</button>
                   </td>
                 </tr>
               ))}

@@ -1,6 +1,6 @@
 // src/pages/ProductDetail.tsx
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate  } from "react-router-dom";
 import "./ProductDetail.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -21,6 +21,9 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import ProductCategoryGrid from "../../components/ProductCategoryGrid/ProductCategoryGrid";
 import { getProductDetail } from "../../services/productService";
+import { addToCart } from "../../services/cartService";
+import { addToWishlist } from "../../services/wishlistService";
+import { addToCompare } from "../../services/compareService";
 
 function colorToHex(colorName: string): string {
   switch (colorName.toLowerCase()) {
@@ -37,7 +40,7 @@ function colorToHex(colorName: string): string {
     case "red":
       return "#C8102E";
     default:
-      return colorName; // nếu backend đã trả sẵn mã Hex, vẫn dùng luôn
+      return colorName;
   }
 }
 
@@ -53,6 +56,7 @@ type SubProduct = {
   discount_percentage: string;
   saled_per_month: number;
   status_enum: number;
+  reviews: Review[];
 };
 
 type ProductData = {
@@ -68,20 +72,26 @@ type ProductData = {
   sub_products: SubProduct[];
 };
 
+interface Review {
+  user_name: string;
+  avatar: string | null;
+  rating: number;
+  comment: string;
+  created_at: string;
+}
+
 export default function ProductDetail() {
-  // Lấy `id` từ URL params
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [data, setData] = useState<ProductData | null>(null);
   const [mainIdx, setMainIdx] = useState(0);
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState<
-    "description" | "specification" | "shippingInformation" | "review"
+    "description" | "specification" | "review"
   >("description");
 
-  // Sub-product đang được chọn
   const [selectedSubProduct, setSelectedSubProduct] = useState<SubProduct | null>(null);
 
-  // Mảng tất cả màu, kích cỡ, hình ảnh
   const [allColors, setAllColors] = useState<string[]>([]);
   const [allSizes, setAllSizes] = useState<string[]>([]);
   const [allImages, setAllImages] = useState<string[]>([]);
@@ -96,16 +106,13 @@ export default function ProductDetail() {
         setData(res);
 
         if (res.sub_products && res.sub_products.length > 0) {
-          // Mặc định chọn sub_product đầu tiên
           setSelectedSubProduct(res.sub_products[0]);
 
-          // Unique màu
           const colors : any = Array.from(
             new Set(res.sub_products.map((sp: SubProduct) => sp.color))
           );
           setAllColors(colors);
 
-          // Unique kích cỡ (tách chuỗi "128GB, 256GB, ...")
           const sizes : any = Array.from(
             new Set(
               res.sub_products
@@ -114,7 +121,6 @@ export default function ProductDetail() {
           );
           setAllSizes(sizes);
 
-          // Danh sách ảnh từ mỗi sub_product
           const images = res.sub_products.map((sp: any) => sp.image);
           setAllImages(images);
 
@@ -126,17 +132,14 @@ export default function ProductDetail() {
       });
   }, [id]);
 
-  // Nếu chưa có dữ liệu hoặc chưa có sub-product, hiển thị loading
   if (!data || !selectedSubProduct) {
     return <div className="loading">Loading...</div>;
   }
 
-  // Tìm index hiện tại của selectedSubProduct
   const currentIndex = data.sub_products.findIndex(
     (sp) => sp.id === selectedSubProduct.id
   );
 
-  // Prev image
   const handlePrevImage = () => {
     if (!data) return;
     const total = data.sub_products.length;
@@ -146,7 +149,6 @@ export default function ProductDetail() {
     setQty(1);
   };
 
-  // Next image
   const handleNextImage = () => {
     if (!data) return;
     const total = data.sub_products.length;
@@ -156,13 +158,72 @@ export default function ProductDetail() {
     setQty(1);
   };
 
-  // Thông tin chung product
+  const handleBuyNow = () => {
+    if (!selectedSubProduct || !data) return;
+
+    const cartItem = {
+      id: selectedSubProduct.id,
+      name: data.name,
+      image: selectedSubProduct.image,
+      price: selectedSubProduct.old_price,
+      quantity: qty,
+    };
+
+    const discountPercentage = parseFloat(selectedSubProduct.discount_percentage) || 0;
+
+    navigate("/checkout", {
+      state: {
+        cartItems: [cartItem],
+        discountPercentage: discountPercentage,
+      },
+    });
+  };
+
+  const handleAddToWishlist = async () => {
+    if (!selectedSubProduct) return;
+    try {
+      const res = await addToWishlist(selectedSubProduct.id);
+      console.log("Wishlist response:", res);
+      alert("Added to wishlist!");
+    } catch (error: any) {
+      console.error("Error adding to wishlist:", error);
+      alert("Sản phẩm đã có trong danh sách yêu thích của bạn.");
+    }
+  };
+
+  const handleAddToCompare = async () => {
+    if (!selectedSubProduct) return;
+    try {
+      const res = await addToCompare(selectedSubProduct.id);
+      console.log("Compare response:", res);
+      alert("Đã thêm vào danh sách so sánh!");
+    } catch (error: any) {
+      console.error("Error adding to Compare:", error);
+
+      if (error.response && error.response.data) {
+        const detail = error.response.data.detail;
+
+        if (typeof detail === 'string') {
+          alert(detail);
+        } else if (typeof detail === 'object') {
+          const messages = Object.values(detail).join('\n');
+          alert(messages);
+        } else {
+          alert("Đã xảy ra lỗi không xác định khi thêm sản phẩm.");
+        }
+
+      } else {
+        alert("Không thể thêm vào danh sách so sánh. Vui lòng thử lại.");
+      }
+    }
+  };
+
+
   const product = {
     brand: data.brand,
     category: data.category,
   };
 
-  // Thông tin của sub-product đang chọn
   const subproduct = {
     title: data.name,
     sku: selectedSubProduct.id,
@@ -172,14 +233,15 @@ export default function ProductDetail() {
     discountPercent: parseFloat(selectedSubProduct.discount_percentage),
   };
 
-  // Nội dung tabs
   const tabs = {
     description: data.description,
-    specification: selectedSubProduct.specification.split(", "),
-    reviewSummary: "Coming soon...",
+    specification: selectedSubProduct.specification.split(", ").map(
+      (item) =>
+        item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()
+    ),
+    reviews: selectedSubProduct.reviews,
   };
 
-  // Xử lý chọn màu
   const handleColorSelect = (color: string) => {
     if (!data) return;
     const found = data.sub_products.find((sp) => sp.color === color);
@@ -190,7 +252,6 @@ export default function ProductDetail() {
     }
   };
 
-  // Xử lý chọn kích cỡ
   const handleSizeSelect = (size: string) => {
     if (!data || !selectedSubProduct) return;
     const found = data.sub_products.find(
@@ -205,7 +266,6 @@ export default function ProductDetail() {
     }
   };
 
-  // Chọn ảnh thumbnail
   const handleImageSelect = (index: number) => {
     if (!data) return;
     const sp = data.sub_products[index];
@@ -290,8 +350,8 @@ export default function ProductDetail() {
           </ul>
 
           <div className="price-block">
-            <span className="new">${subproduct.current}</span>
-            <span className="old">${subproduct.original}</span>
+            <span className="new">{subproduct.current.toLocaleString('en-US', { maximumFractionDigits: 2 })} VNĐ</span>
+            <span className="old">{subproduct.original.toLocaleString('en-US', { maximumFractionDigits: 2 })} VNĐ</span>
             <span className="discount">
               {subproduct.discountPercent}% OFF
             </span>
@@ -347,12 +407,31 @@ export default function ProductDetail() {
             </div>
             <button
               className="btn add-to-cart"
-              disabled={selectedSubProduct.stock === 0}
+              disabled={selectedSubProduct.stock <= 0}
+              onClick={async () => {
+                try {
+                  const res = await addToCart(selectedSubProduct.id, qty);
+                  console.log("Added to cart:", res.cart);
+                  alert("Đã thêm vào giỏ hàng!");
+                } catch (error: any) {
+                  console.error("Lỗi khi thêm vào giỏ hàng:", error);
+                  const response = error.response;
+
+                  if (response?.data?.errors?.subproduct?.length > 0) {
+                    alert(response.data.errors.subproduct[0]);
+                  } else if (response?.data?.detail) {
+                    alert(response.data.detail);
+                  } else {
+                    alert("Thêm vào giỏ hàng thất bại!");
+                  }
+                }
+              }}
             >
-              Add To Cart <FontAwesomeIcon icon={faShoppingCart} />
+              <FontAwesomeIcon icon={faShoppingCart} /> Add to Cart
             </button>
             <button
               className="btn buy-now"
+              onClick={handleBuyNow}
               disabled={selectedSubProduct.stock === 0}
             >
               Buy Now
@@ -360,10 +439,10 @@ export default function ProductDetail() {
           </div>
 
           <div className="extras">
-            <button>
+            <button onClick={handleAddToWishlist}>
               <FontAwesomeIcon icon={faHeartOutline} /> Add to Wishlist
             </button>
-            <button>
+            <button onClick={handleAddToCompare}>
               <FontAwesomeIcon icon={faExchangeAlt} /> Add to Compare
             </button>
             <div className="share">
@@ -402,20 +481,13 @@ export default function ProductDetail() {
       {/* Tabs */}
       <div className="bottom">
         <div className="tabs">
-          {[
-            "description",
-            "specification",
-            "shippingInformation",
-            "review",
-          ].map((tab) => (
+          {["description", "specification", "review"].map((tab) => (
             <button
               key={tab}
               className={activeTab === tab ? "active" : ""}
-              onClick={() => setActiveTab(tab as any)}
+              onClick={() => setActiveTab(tab as "description" | "specification" | "review")}
             >
-              {tab === "shippingInformation"
-                ? "Shipping Info"
-                : tab === "review"
+              {tab === "review"
                 ? "Reviews"
                 : tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
@@ -430,7 +502,6 @@ export default function ProductDetail() {
           )}
           {activeTab === "specification" && (
             <div className="spec">
-              <h3>Specification</h3>
               <ul>
                 {tabs.specification.map((item, i) => (
                   <li key={i}>{item}</li>
@@ -438,20 +509,35 @@ export default function ProductDetail() {
               </ul>
             </div>
           )}
-          {activeTab === "shippingInformation" && (
-            <div className="shipping">
-              <h3>Shipping Information</h3>
-              <p>Thông tin vận chuyển đang được cập nhật...</p>
-            </div>
-          )}
           {activeTab === "review" && (
             <div className="review">
-              <h3>Reviews</h3>
-              <p>{tabs.reviewSummary}</p>
+              {tabs.reviews.length === 0 ? (
+                <p>Chưa có đánh giá nào.</p>
+              ) : (
+                <ul className="review-list">
+                  {tabs.reviews.map((r, idx) => (
+                    <li key={idx} className="review-item">
+                      <div className="review-header">
+                        <strong>{r.user_name}</strong>
+                        <span className="rating"> ({r.rating} ★)</span>
+                        <span className="date">
+                          {new Date(r.created_at).toLocaleDateString("vi-VN", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      <p className="comment">{r.comment}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           )}
         </div>
       </div>
+
       <ProductCategoryGrid />
     </div>
   );

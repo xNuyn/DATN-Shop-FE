@@ -35,14 +35,42 @@
       display: flex;
       gap: 8px;
       margin-top: 12px;
+
+      /* Giới hạn chiều ngang */
+      max-width: 400px;       /* Bạn có thể điều chỉnh giá trị này tuỳ ý */
+      overflow-x: hidden;     /* Ẩn phần tràn ra bên ngoài */
+
+      /* Khi hover, cho phép cuộn ngang */
+      transition: overflow 0.3s ease;
+      &:hover {
+        overflow-x: auto;
+      }
+
+      /* Đảm bảo các thumbnail không bị co giãn */ 
       img {
-        width: 80px;
-        height: 50px;
+        flex: 0 0 auto;
+        width: 80px;          /* Hoặc width tùy ý, nhưng nên cố định để .thumbs tính toán được overflow */
+        height: 60px;
         object-fit: cover;
         cursor: pointer;
         border: 2px solid transparent;
         border-radius: 2px;
-        &.active { border-color: #ff8c00; }
+
+        &.active {
+          border-color: #ff8c00;
+        }
+      }
+
+      /* Tùy chọn: ẩn scrollbar trên Chrome/Firefox khi không hover */
+      &::-webkit-scrollbar {
+        height: 6px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
       }
     }
   }
@@ -118,8 +146,14 @@
         font-size: 16px;
         border: none;
         cursor: pointer;
-        &.add-to-cart { background: #ff8c00; color: #fff; }
-        &.buy-now { background: none; border: 1px solid #ff8c00; color: #ff8c00; }
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        &.add-to-cart { background: #ff6600; color: #fff; }
+        &.buy-now { background: none; border: 1px solid #ff6600; color: #ff6600; }
+
+        &:hover{
+          color: #d7321c;
+        }
       }
     }
     .extras {
@@ -130,6 +164,10 @@
       button {
         background: none; border: none; color: #555; font-size: 14px; cursor: pointer;
         svg { margin-right: 4px; }
+
+        &:hover{
+          color: #ff6600;
+        }
       }
       .share {
         margin-left: auto;
@@ -161,33 +199,66 @@
       }
     }
   }
-  .bottom {  
-    margin-top: 20px; 
-    border: 2px solid #ddd;
-    margin-bottom: 40px;
+  .bottom {
+    margin: 30px 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 
     .tabs {
       display: flex;
-      margin: 10px 0 16px 0;
+      justify-content: space-between;
       border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+
       button {
         background: none;
         border: none;
-        padding: 8px 16px;
+        padding: 10px 150px;
         font-size: 16px;
+        font-weight: 500;
+        color: #666;
         cursor: pointer;
-        &.active {
-          border-bottom: 2px solid #ff8c00;
+        transition: all 0.3s ease;
+
+        &:hover {
           color: #ff8c00;
+        }
+
+        &.active {
+          border-bottom: 3px solid #ff8c00;
+          color: #ff8c00;
+          font-weight: 600;
         }
       }
     }
+
     .tab-content {
-      .desc, .spec, .review {
-        h3 { font-size: 20px; margin-bottom: 12px; }
-        p, ul { font-size: 14px; line-height: 1.6; color: #555; }
-        ul { list-style: disc inside; margin-bottom: 16px; }
+      .desc,
+      .spec,
+      .review {
+        h3 {
+          font-size: 22px;
+          margin-bottom: 12px;
+          color: #333;
+        }
+
+        p,
+        ul {
+          font-size: 15px;
+          line-height: 1.8;
+          color: #555;
+        }
+
+        ul {
+          list-style: disc inside;
+          margin-bottom: 16px;
+          padding-left: 10px;
+        }
       }
     }
   }
+
 }

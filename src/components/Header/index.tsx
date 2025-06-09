@@ -1,6 +1,7 @@
+import { FC, memo, useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Badge, Button, Dropdown, Flex, Input, Menu, MenuProps, message } from "antd";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
-import { Badge, Button, Flex, Input, Menu, MenuProps } from "antd";
-import { FC, memo, useState } from "react";
 import HeaderPhone from "../../assets/icons/HeadPhone";
 import Heart from "../../assets/icons/Heart";
 import Information from "../../assets/icons/Information";
@@ -9,14 +10,10 @@ import Logo from "../../assets/icons/Logo";
 import Reload from "../../assets/icons/Reload";
 import ShoppingCart from "../../assets/icons/ShoppingCart";
 import UserProfile from "../../assets/icons/UserProfile";
-import SignIn from "../SignIn";
 import "./header.scss";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import { Dropdown } from "antd";
-import { useEffect } from "react";
 import { logout } from "../../services/authService";
 import { getCategories } from "../../services/categoryService";
+import { getMyCart } from "../../services/cartService";
 
 interface Category {
     id: number;
@@ -27,7 +24,7 @@ interface Category {
 interface CategoryItem {
   key: string;
   label: string;
-  children?: CategoryItem[]; // nếu không có con thì bỏ trống
+  children?: CategoryItem[];
 }
 
 const buildCategoryTree = (categories: Category[] = []): Category[] => {
@@ -57,10 +54,10 @@ const Header: FC = memo(() => {
     const location = useLocation();
     const pathname = location.pathname;
     const [openMenu, setOpenMenu] = useState(false);
-    const [openModalSignIn, setOpenModalSignIn] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [categoryItems, setCategoryItems] = useState<CategoryItem[]>([]);
     const [keyword, setKeyword] = useState("");
+    const [cartCount, setCartCount] = useState(0);
 
     const handleSearch = (value: string) => {
         const trimmed = value.trim();
@@ -107,6 +104,20 @@ const Header: FC = memo(() => {
         return () => window.removeEventListener("storage", syncUser);
     }, []);
 
+    useEffect(() => {
+        const fetchCartCount = async () => {
+            try {
+            const cartData = await getMyCart();
+            const totalCount = cartData.reduce((sum: number, item: any) => sum + item.quantity, 0);
+            setCartCount(totalCount);
+            } catch (error) {
+            console.error("Failed to fetch cart count:", error);
+            }
+        };
+
+        fetchCartCount();
+    }, []);
+
     const handleLogout = async () => {
         try {
             const refresh_token = localStorage.getItem("refresh_token");
@@ -119,17 +130,34 @@ const Header: FC = memo(() => {
             localStorage.clear();
             setUser(null);
             navigate("/");
+            window.location.reload();
+        }
+    };
+
+    const requireLogin = (action: () => void) => {
+        if (!user) {
+            message.warning("Bạn cần đăng nhập để sử dụng chức năng này");
+        } else {
+            action();
         }
     };
 
     const userMenu: MenuProps["items"] = [
         {
             key: "1",
-            label: <span onClick={() => navigate("/account-setting")}>Account Profile</span>,
+            label: <span style={{
+                                display: 'block',
+                                width: '100%',
+                                cursor: 'pointer'
+                                }} onClick={() => navigate(`/account-setting/${user?.id}`)}>Account Profile</span>,
         },
         {
             key: "2",
-            label: <span onClick={handleLogout}>Log out</span>,
+            label: <span style={{
+                                display: 'block',
+                                width: '100%',
+                                cursor: 'pointer'
+                                }} onClick={handleLogout}>Log out</span>,
         },
     ];
 
@@ -155,16 +183,16 @@ const Header: FC = memo(() => {
                     />
                     <Flex align="center" gap={16} className="icon--wrapper">
                         <div className="cart-wrapper" 
-                            onClick={() => {
-                                setOpenModalSignIn(false);
-                                navigate("/shopping-cart");
-                            }}
+                            onClick={() => requireLogin(() => navigate("/shopping-cart"))}
+                            style={{ cursor: "pointer" }}
                         >
-                        <Badge count={5} size="small">
+                        <Badge count={cartCount} size="small">
                             <ShoppingCart />
                         </Badge>
                         </div>
-                        <div onClick={() => navigate('/wishlist')} style={{ cursor: 'pointer' }}>
+                        <div 
+                            onClick={() => requireLogin(() => navigate("/wishlist"))} 
+                            style={{ cursor: 'pointer' }}>
                             <Heart />
                         </div>
                         <div>
@@ -177,15 +205,13 @@ const Header: FC = memo(() => {
                             ) : (
                                 <div
                                 onClick={() => {
-                                    setOpenModalSignIn(!openModalSignIn);
+                                    navigate("/login");
                                 }}
+                                style={{ cursor: "pointer" }}
                                 >
                                 <UserProfile />
                                 </div>
                             )}
-                            <div className="signIn-modal" hidden={!openModalSignIn}>
-                                <SignIn />
-                            </div>
                         </div>
                     </Flex>
                 </Flex>
@@ -245,7 +271,7 @@ const Header: FC = memo(() => {
                                 className={pathname === "/track-order" ? "active-btn" : ""}
                                 type="text"
                                 icon={<Location />}
-                                onClick={() => navigate("/track-order")}
+                                onClick={() => requireLogin(() => navigate("/track-order"))}
                             >
                                 Track Order
                         </Button>
@@ -253,7 +279,7 @@ const Header: FC = memo(() => {
                                 className={pathname === "/compare" ? "active-btn" : ""}
                                 type="text" 
                                 icon={<Reload />}
-                                onClick={() => navigate("/compare")}
+                                onClick={() => requireLogin(() => navigate("/compare"))}
                             >
                                 Compare
                         </Button>
@@ -263,7 +289,7 @@ const Header: FC = memo(() => {
                                 icon={<HeaderPhone />}
                                 onClick={() => navigate("/customer-support")}
                             >
-                                Customer Support
+                                Chatbot AI
                         </Button>
                         <Button 
                                 className={pathname === "/need-help" ? "active-btn" : ""}

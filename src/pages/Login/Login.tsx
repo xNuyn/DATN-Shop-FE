@@ -23,7 +23,11 @@ const Login = () => {
       localStorage.setItem("user", JSON.stringify(data.user));
       window.dispatchEvent(new Event("storage"));
 
-      navigate("/");
+      if (data.user.role === "admin") {
+        navigate("/admin-product-list");
+      } else {
+        navigate("/");
+      }
     } catch (err: any) {
       const message =
         err.response?.data?.detail || "Đã xảy ra lỗi trong quá trình đăng nhập";

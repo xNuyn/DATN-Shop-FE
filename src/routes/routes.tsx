@@ -16,6 +16,18 @@ import ProductDetail from '../pages/ProductDetail/ProductDetail';
 import Checkout from '../pages/Checkout/Checkout';
 import OrderSuccessPage from '../pages/SuccessPage/OrderSuccessPage';
 import OrderDetailPage from '../pages/OrderDetail/OrderDetailPage';
+import ChatPage from '../pages/ChatPage/ChatPage';
+import ProductList from '../pages/Admin/ProductList/ProductList';
+import OrderList from '../pages/Admin/OrderList/OrderList';
+import CouponList from '../pages/Admin/CouponList/CouponList';
+import CouponAdd from '../pages/Admin/CouponAdd/CouponAdd';
+import CreateProduct from '../pages/Admin/CreateProduct/CreateProduct';
+import CustomerList from '../pages/Admin/CustomerList/CustomerList';
+import CustomerDetail from '../pages/Admin/CustomerDetail/CustomerDetail';
+import CategoriesList from '../pages/Admin/CategoriesList/CategoriesList';
+import Review from '../pages/Admin/Review/Review';
+import Dashboard from '../pages/Admin/Dashboard/Dashboard';
+import ProductEdit from '../pages/Admin/ProductEdit/ProductEdit';
 
 export default function RouteComponent() {
     const routeElements = useRoutes([
@@ -60,7 +72,7 @@ export default function RouteComponent() {
             ),
         },
         {
-            path: '/order-detail',
+            path: '/order-detail/:id',
             element: (
                 <PrimaryLayout>
                     <OrderDetailPage/>
@@ -79,6 +91,7 @@ export default function RouteComponent() {
             path: '/customer-support',
             element: (
                 <PrimaryLayout>
+                    <ChatPage/>
                 </PrimaryLayout>
             ),
         },
@@ -99,7 +112,7 @@ export default function RouteComponent() {
             ),
         },
         {
-            path: '/account-setting',
+            path: '/account-setting/:id',
             element: (
                 <PrimaryLayout>
                     <AccountSettingPage/>
@@ -152,6 +165,72 @@ export default function RouteComponent() {
                 <PrimaryLayout>
                     <OrderSuccessPage/>
                 </PrimaryLayout>
+            ),
+        },
+        {
+            path: '/admin-product-list',
+            element: (
+                <ProductList/>
+            ),
+        },
+        {
+            path: '/admin-order-list',
+            element: (
+                <OrderList/>
+            ),
+        },
+        {
+            path: '/admin-coupon-list',
+            element: (
+                <CouponList/>
+            ),
+        },
+        {
+            path: '/admin-coupon-add',
+            element: (
+                <CouponAdd/>
+            ),
+        },
+        {
+            path: '/admin-product-add',
+            element: (
+                <CreateProduct/>
+            ),
+        },
+        {
+            path: '/admin-customer-list',
+            element: (
+                <CustomerList/>
+            ),
+        },
+        {
+            path: '/admin-customer-detail/:id',
+            element: (
+                <CustomerDetail/>
+            ),
+        },
+        {
+            path: '/admin-category-list',
+            element: (
+                <CategoriesList/>
+            ),
+        },
+        {
+            path: '/admin-review',
+            element: (
+                <Review/>
+            ),
+        },
+        {
+            path: '/admin-dashboard',
+            element: (
+                <Dashboard/>
+            ),
+        },
+        {
+            path: '/admin-product-edit/:id',
+            element: (
+                <ProductEdit/>
             ),
         },
     ]);

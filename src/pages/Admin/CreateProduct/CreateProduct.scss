@@ -1,0 +1,219 @@
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+
+  .create-product {
+    flex: 1;
+    padding: 2rem;
+    background-color: #f9f9fb;
+    overflow-y: auto;
+
+    h2 {
+      font-size: 1.5rem;
+      color: #505480;
+      margin-bottom: 2rem;
+      font-weight: bold;
+    }
+
+    .form-card {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+
+      h4 {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        color: #303250;
+      }
+
+      .upload-box {
+        border: 2px dashed #ccc;
+        padding: 2rem;
+        text-align: center;
+        border-radius: 12px;
+        color: #999;
+        margin-bottom: 2rem;
+
+        .upload-icon {
+          font-size: 2rem;
+          margin-bottom: 1rem;
+          color: #ff6b35;
+        }
+
+        .browse {
+          color: #ff6b35;
+          font-weight: bold;
+          cursor: pointer;
+        }
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+
+          label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+          }
+
+          input,
+          select {
+            padding: 0.6rem 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 0.95rem;
+          }
+        }
+      }
+
+      .tag-box {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 0.6rem 0.8rem;
+        min-height: 45px;
+
+        .tag {
+          background-color: #ff6b35;
+          color: white;
+          padding: 0.3rem 0.6rem;
+          border-radius: 6px;
+          font-size: 0.85rem;
+          display: flex;
+          align-items: center;
+
+          .remove {
+            margin-left: 0.4rem;
+            cursor: pointer;
+          }
+        }
+      }
+
+      .options-section {
+        margin-top: 2rem;
+
+        .size-color-row {
+          display: flex;
+          gap: 2rem;
+          flex-wrap: wrap;
+
+          .form-group {
+            flex: 1;
+
+            .size-options, .color-options {
+              display: flex;
+              gap: 0.5rem;
+              margin-top: 0.5rem;
+
+              .size-box {
+                padding: 0.5rem 0.9rem;
+                background: #f0f2f5;
+                border-radius: 8px;
+                font-weight: bold;
+                cursor: pointer;
+              }
+
+              .color-dot {
+                width: 26px;
+                height: 26px;
+                border-radius: 50%;
+                border: 2px solid #dcdde1;
+                cursor: pointer;
+              }
+            }
+          }
+        }
+      }
+
+      .full-width {
+        margin-top: 1.5rem;
+
+        textarea {
+          width: 100%;
+          padding: 0.8rem;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          resize: vertical;
+        }
+      }
+
+      .pricing-section {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+
+        .pricing-group {
+          flex: 1;
+          min-width: 200px;
+
+          label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #303250;
+          }
+
+          .input-icon {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+
+            span {
+              background: #f5f5f5;
+              padding: 0.6rem 0.8rem;
+              color: #555;
+              font-weight: bold;
+              border-right: 1px solid #ccc;
+            }
+
+            input {
+              flex: 1;
+              border: none;
+              padding: 0.6rem 0.8rem;
+              font-size: 0.95rem;
+
+              &:focus {
+                outline: none;
+              }
+            }
+          }
+        }
+      }
+
+      .submit-btn {
+        margin-top: 2rem;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        background-color: #ff6b35;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+
+        &:hover {
+          background-color: #e35a26;
+        }
+      }
+    }
+  }
+}

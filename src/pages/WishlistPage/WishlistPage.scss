@@ -23,8 +23,8 @@
 
     .wishlist-table {
       background-color: #fff;
-      border-radius: 12px;
       padding: 16px;
+      border-radius: 12px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       overflow-x: auto;
 
@@ -74,14 +74,17 @@
 
         .price-cell {
           font-size: 14px;
+          white-space: nowrap;
 
           .original-price {
+            display: block;
             text-decoration: line-through;
             color: #aaa;
-            margin-right: 6px;
+            margin-bottom: 4px;
           }
 
-          .current-price {
+          .sale-price {
+            display: block;
             color: #000;
             font-weight: 600;
           }

@@ -1,0 +1,214 @@
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+
+  .customer-list {
+    flex: 1;
+    padding: 2rem;
+    background-color: #f8f8f8;
+    overflow-y: auto;
+
+    .customer-summary {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+
+      .summary-card {
+        flex: 1;
+        min-width: 220px;
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        gap: 1rem;
+
+        .icon-box {
+          background-color: #ffece3;
+          border-radius: 12px;
+          padding: 12px;
+          font-size: 1.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .content {
+          h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #303250;
+          }
+
+          .value {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 4px;
+            color: #2d2d2d;
+          }
+
+          .change {
+            margin-top: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 8px;
+            display: inline-block;
+
+            &.up {
+              background-color: #e1f6eb;
+              color: #27ae60;
+            }
+
+            &.down {
+              background-color: #fde8e8;
+              color: #e74c3c;
+            }
+          }
+        }
+      }
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #505480;
+      margin-bottom: 1.5rem;
+    }
+
+    .table-container {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+          padding: 1rem;
+          text-align: left;
+          border-bottom: 1px solid #eee;
+          font-size: 14px;
+        }
+
+        th {
+          background-color: #f0f0f5;
+          color: #666;
+          font-weight: 600;
+        }
+
+        .customer {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+          }
+
+          span {
+            font-weight: 500;
+          }
+        }
+
+        .status {
+          padding: 4px 10px;
+          border-radius: 12px;
+          font-weight: 500;
+          font-size: 13px;
+          display: inline-block;
+
+          &.completed {
+            background-color: #d4f5dd;
+            color: #27ae60;
+          }
+
+          &.pending {
+            background-color: #fff1dc;
+            color: #f39c12;
+          }
+
+          &.cancel {
+            background-color: #ffd6d6;
+            color: #e74c3c;
+          }
+        }
+
+        .actions {
+          display: flex;
+          gap: 8px;
+
+          button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 6px;
+            transition: transform 0.2s;
+
+            &:hover {
+              transform: scale(1.1);
+            }
+
+            &.view {
+              color: #6c63ff;
+            }
+
+            &.edit {
+              color: #f39c12;
+            }
+
+            &.delete {
+              color: #e74c3c;
+            }
+          }
+        }
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: flex-end;
+        padding: 1rem;
+        gap: 0.3rem;
+
+        button {
+          background-color: #fff;
+          border: 1px solid #ddd;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 500;
+          color: #333;
+          min-width: 40px;
+          transition: background 0.2s;
+
+          &.active {
+            background-color: #ff6b35;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+          }
+
+          &:hover:not(.active):not(:disabled) {
+            background-color: #f0f0f0;
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+}

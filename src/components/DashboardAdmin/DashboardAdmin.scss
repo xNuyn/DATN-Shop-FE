@@ -1,0 +1,120 @@
+.dashboard-admin {
+  width: 250px;
+  height: 100vh;
+  background-color: #232b34;
+  color: #c7cbd1;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 10px;
+
+  // ⚠️ Thêm để xử lý lỗi cuộn bị mờ/ẩn
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-clip: padding-box;
+
+  // Tuỳ chỉnh scrollbar (tùy chọn)
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #3a4654;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 30px;
+
+    .logo-icon {
+      font-size: 24px;
+      color: #ff7f00;
+      margin-right: 8px;
+    }
+
+    .logo-text {
+      font-weight: bold;
+      font-size: 20px;
+      color: white;
+    }
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: #737c8b;
+    margin-bottom: 10px;
+    margin-top: 15px;
+    text-transform: uppercase;
+  }
+
+  .menu-group {
+    margin-bottom: 10px;
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+
+      svg {
+        margin-right: 10px;
+      }
+
+      &:hover {
+        background-color: #2e3a47;
+      }
+
+      &.active {
+        background-color: #ff6600;
+        color: white;
+
+        svg {
+          color: white;
+        }
+      }
+
+      &.disabled {
+        opacity: 0.3;
+        pointer-events: none;
+      }
+    }
+
+    .submenu {
+      padding-left: 28px;
+      margin-top: 5px;
+      transition: all 0.2s ease;
+
+      .submenu-item {
+        padding: 5px 0;
+        font-size: 13px;
+        cursor: pointer;
+        color: #a6aeb8;
+
+        &.active {
+          color: #ff6600;
+          font-weight: bold;
+        }
+
+        &:hover {
+          color: #ffffff;
+        }
+
+        &.disabled {
+          opacity: 0.4;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+}

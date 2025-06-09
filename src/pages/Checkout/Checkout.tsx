@@ -1,59 +1,186 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Checkout.scss';
+import { useBillingContext } from "../../utils/BillingContext";
+import { getPaymentMethods, PaymentMethod, createPayment, PaymentRequest } from '../../services/paymentService';
+import { createOrder, createOrderDetail, OrderRequest, OrderDetailRequest } from '../../services/orderService';
+import { getMyCart, softDeleteCartItem } from '../../services/cartService'; 
+
+interface CartItemBuyNow {
+  id: number;
+  name: string;
+  image: string;
+  price: number;
+  quantity: number;
+}
+
+interface CartItemFromShoppingCart {
+  id: number;
+  user: number;
+  subproductId: number;
+  quantity: number;
+  name: string;
+  image: string;
+  price: number;
+}
+
+type CartItem = CartItemBuyNow | CartItemFromShoppingCart;
+
+interface CartFromBackend {
+  id: number;
+  user: number;
+  sub_product: {
+    id: number;
+  };
+  quantity: number;
+}
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const handlePlaceOrder = () => {
-    navigate('/success');
-  };
-  const [paymentMethod, setPaymentMethod] = useState('credit');
-  const [cartItems, setCartItems] = useState([]);
+  const location = useLocation();
 
-  // Fake API Call
+  const [paymentMethod, setPaymentMethod] = useState<string>('');
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [discountPercentage, setDiscountPercentage] = useState<number>(0);
+  const { billingInfo } = useBillingContext();
+
   useEffect(() => {
-    const fetchedItems = [
-      {
-        id: 1,
-        name: 'Canon EOS 1500D DSLR Camera Body',
-        image: 'https://cdn.tgdd.vn/Products/Images/42/329144/iphone-16-pro-titan-trang.png',
-        price: 370,
-        quantity: 1,
-      },
-      {
-        id: 2,
-        name: 'Wired Over-Ear Gaming Headphones',
-        image: 'https://cdn.tgdd.vn/Products/Images/42/329144/iphone-16-pro-titan-trang.png',
-        price: 250,
-        quantity: 3,
-      },
-    ];
-    setCartItems(fetchedItems);
+    if (location.state) {
+      if (location.state.cartItems) {
+        const normalized = location.state.cartItems.map((item: any) => {
+          if (!item.sub_product) {
+            return {
+              ...item,
+              sub_product: {
+                id: item.subproductId || item.id,
+              },
+            };
+          }
+          return item;
+        });
+        setCartItems(normalized as CartItem[]);
+      }
+      if (location.state.discountPercentage !== undefined) {
+        setDiscountPercentage(location.state.discountPercentage as number);
+      }
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    const fetchPaymentMethods = async () => {
+      try {
+        const data = await getPaymentMethods();
+        setPaymentMethods(data);
+      } catch (error) {
+        console.error('Error fetching payment methods:', error);
+      }
+    };
+
+    fetchPaymentMethods();
   }, []);
 
-  // Tính toán
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const discount = subtotal * 0.075; // 7.5%
-  const tax = (subtotal - discount) * 0.1; // 10%
+  const discount = subtotal * (discountPercentage / 100);
+  const tax = subtotal * 0.1;
   const total = subtotal - discount + tax;
+  const shippingCost = 0;
+
+  const handlePlaceOrder = async () => {
+    if (!paymentMethod) {
+      alert('Vui lòng chọn phương thức thanh toán.');
+      return;
+    }
+
+    try {
+      console.log('cartItems from state:', cartItems);
+      // 1. Tạo Order chính
+      const orderPayload: OrderRequest = {
+        subtotal: parseFloat(subtotal.toFixed(2)),
+        tax: parseFloat(tax.toFixed(2)),
+        discount: parseFloat(discount.toFixed(2)),
+        shipping_cost: shippingCost,
+        total_price: parseFloat(total.toFixed(2)),
+      };
+      const createdOrder = await createOrder(orderPayload);
+      const orderId: number = createdOrder.order.id;
+
+      // 2. Tạo OrderDetail cho từng item trong cart
+      // 2. Tạo OrderDetail cho từng item trong cart
+      const detailPromises: Promise<any>[] = cartItems.map((item) => {
+        const detailPayload: OrderDetailRequest = {
+          order_id: orderId,
+          sub_product_id: item.sub_product.id,  // chắc chắn tồn tại sau normalize
+          quantity: item.quantity,
+          price: item.price,
+        };
+
+        console.log('Tạo OrderDetail:', detailPayload); // debug payload gửi lên server
+
+        return createOrderDetail(detailPayload);
+      });
+      await Promise.all(detailPromises);
+
+      // 3. Tạo Payment
+      const paymentPayload: PaymentRequest = {
+        order_id: orderId,
+        payment_method_id: Number(paymentMethod),
+      };
+      await createPayment(paymentPayload);
+
+      // 4. Soft-delete từng subproduct trong giỏ hàng qua API
+      const allCartItems: CartFromBackend[] = await getMyCart();
+      console.log('allCartItems from server:', allCartItems);
+
+      //   5.2 Chuẩn bị danh sách Promise xoá
+      const deletePromises: Promise<any>[] = [];
+
+      cartItems.forEach((item) => {
+        // Trường hợp 1: item.id trùng với cart.id -> xóa ngay
+        const matchByCartId = allCartItems.find((c) => c.id === item.id);
+        if (matchByCartId) {
+          deletePromises.push(softDeleteCartItem(matchByCartId.id));
+        } else {
+          // Trường hợp 2: coi item.id là sub_product_id
+          const subProductId = 'sub_product' in item
+            ? item.sub_product.id
+            : (item as CartItemBuyNow).id;
+
+          // Tìm tất cả cart entries có sub_product.id === subProductId
+          const matchingCarts = allCartItems.filter(
+            (c) => c.sub_product.id === subProductId
+          );
+          matchingCarts.forEach((c) => {
+            deletePromises.push(softDeleteCartItem(c.id));
+          });
+        }
+      });
+
+      await Promise.all(deletePromises);
+
+      // 5. Điều hướng sang trang thành công
+      navigate('/success');
+    } catch (error: any) {
+      console.error('Lỗi khi đặt hàng:', error);
+      alert('Đặt hàng thất bại. Vui lòng thử lại.');
+    }
+  };
+
 
   return (
     <div className="checkout-container">
       <div className="checkout-main form-section">
-        {/* Billing Form */}
         <h2>Billing Information</h2>
         <form className="billing-form">
           <div className="form-grid">
-            <input type="text" placeholder="First Name" />
-            <input type="text" placeholder="Last Name" />
-            <input type="text" className="full-width" placeholder="Company Name (Optional)" />
-            <input type="text" className="full-width" placeholder="Address" />
-            <select><option>Country</option></select>
-            <select><option>Region/State</option></select>
-            <select><option>City</option></select>
-            <input type="text" placeholder="Zip Code" />
-            <input type="email" className="full-width" placeholder="Email" />
-            <input type="text" className="full-width" placeholder="Phone Number" />
+            <input type="text" placeholder="First Name" value={billingInfo.firstName} readOnly />
+            <input type="text" placeholder="Last Name" value={billingInfo.lastName} readOnly />
+            <input type="text" className="full-width" placeholder="Address" value={billingInfo.address} readOnly />
+            <input type="text" placeholder="Country/Region" value={billingInfo.country} readOnly />
+            <input type="text" placeholder="Zip Code" value={billingInfo.zipCode} readOnly />
+            <input type="text" className="full-width" placeholder="Phone Number" value={billingInfo.phone} readOnly />
+            <input type="email" className="full-width" placeholder="Email" value={billingInfo.email} readOnly />
           </div>
 
           <div className="checkbox">
@@ -61,23 +188,22 @@ const Checkout = () => {
             <label htmlFor="shipDifferent">Ship to a different address</label>
           </div>
 
-          {/* Payment */}
           <h2>Payment Option</h2>
           <div className="methods">
-            {['cod', 'credit'].map((method) => (
-              <label key={method} className="method-radio">
+            {paymentMethods.map((method) => (
+              <label key={method.id} className="method-radio">
                 <input
                   type="radio"
                   name="payment"
-                  value={method}
-                  checked={paymentMethod === method}
-                  onChange={() => setPaymentMethod(method)}
+                  value={method.id}
+                  checked={paymentMethod === String(method.id)}
+                  onChange={() => setPaymentMethod(String(method.id))}
                 />
-                {method === 'cod' ? 'Cash on Delivery' : 'Debit/Credit Card'}
+                {method.name}
               </label>
             ))}
           </div>
-          {paymentMethod === 'credit' && (
+          {paymentMethods.find(m => m.id === Number(paymentMethod))?.name.toLowerCase() === 'credit card' && (
             <div className="card-details">
               <input type="text" className="full-width" placeholder="Name on Card" />
               <input type="text" className="full-width" placeholder="Card Number" />
@@ -93,7 +219,6 @@ const Checkout = () => {
         </form>
       </div>
 
-      {/* Order Summary */}
       <div className="checkout-summary summary-section">
         <h3>Order Summary</h3>
         <div className="order-items">
@@ -102,17 +227,20 @@ const Checkout = () => {
               <img src={item.image} alt={item.name} className="item-image" />
               <div className="info">
                 <div className="details">{item.name}</div>
-                <div className="price">{item.quantity} x ${item.price}</div>
+                <div className="price">{item.quantity} x {item.price.toLocaleString('en-US', { maximumFractionDigits: 2 })} VNĐ</div>
               </div>
             </div>
           ))}
         </div>
         <div className="summary-totals">
-          <div className="line"><span>Sub-total:</span><span>${subtotal.toFixed(2)}</span></div>
+          <div className="line"><span>Sub-total:</span><span>{subtotal.toLocaleString('en-US', { maximumFractionDigits: 2 })} VNĐ</span></div>
           <div className="line"><span>Shipping:</span><span>Free</span></div>
-          <div className="line"><span>Discount:</span><span>${discount.toFixed(2)}</span></div>
-          <div className="line"><span>Tax:</span><span>${tax.toFixed(2)}</span></div>
-          <div className="line total"><span>Total:</span><span>${total.toFixed(2)}</span></div>
+          <div className="line">
+            <span>Discount({discountPercentage}%):</span>
+            <span>{discount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} VNĐ</span>
+          </div>
+          <div className="line"><span>Tax:</span><span>{tax.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} VNĐ</span></div>
+          <div className="line total"><span>Total:</span><span>{total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} VNĐ</span></div>
         </div>
         <button className="place-order" onClick={handlePlaceOrder}>PLACE ORDER</button>
       </div>

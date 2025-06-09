@@ -1,36 +1,87 @@
-import React from 'react';
+// src/pages/OrderDetailPage.tsx
+import React, { useEffect, useState } from 'react';
 import './OrderDetailPage.scss';
 import DashboardSidebar from '../../components/DashboardSidebar/DashboardSidebar';
+import { getOrderById } from '../../services/orderService';
+import { createReview, CreateReviewPayload } from '../../services/reviewService';
+import { useNavigate, useParams } from 'react-router-dom';
+import ReviewModal from '../../components/ReviewModal/ReviewModal';
 
 const OrderDetailPage: React.FC = () => {
-  const orderStatus = 'PROCESSING';
-  const products = [
-    {
-      id: 1,
-      image: 'https://cdn.tgdd.vn/Products/Images/42/329135/iphone-16-blue-600x600.png',
-      name: 'Google Pixel 6 Pro - 5G Android Phone',
-      category: 'SMARTPHONE',
-      price: 899,
-      quantity: 1,
-    },
-    {
-      id: 2,
-      image: 'https://cdn.tgdd.vn/Products/Images/42/329135/iphone-16-blue-600x600.png',
-      name: 'Tech21 Evo Clear for Google Pixel 6 Pro',
-      category: 'ACCESSORIES',
-      price: 39,
-      quantity: 1,
-    },
-  ];
+  const navigate =useNavigate()
+  const [order, setOrder] = useState<any>(null);
+  const { id } = useParams();
+  const [showModal, setShowModal] = useState(false);
+
+  // MỚI: state lưu sub_product_id của sản phẩm được chọn để đánh giá
+  const [selectedSubProductId, setSelectedSubProductId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const data = await getOrderById(Number(id));
+        setOrder(data);
+      } catch (error) {
+        console.error('Lỗi khi lấy đơn hàng:', error);
+      }
+    };
+
+    fetchOrder();
+  }, [id]);
+
+  if (!order) return <div>Đang tải đơn hàng...</div>;
+
+  // MỚI: map thêm field subProductId = detail.sub_product.id
+  const products = order.order_details.map((detail: any) => ({
+    orderDetailId: detail.id,
+    subProductId: detail.sub_product.id,
+    image: detail.sub_product.image,
+    name: detail.sub_product.product.name,
+    category: detail.sub_product.product.category,
+    price: parseFloat(detail.sub_product.price),
+    quantity: detail.quantity,
+    idproduct: detail.sub_product.product.id,
+  }));
 
   const billingInfo = {
-    name: 'Kevin Gilbert',
-    address: 'East Tejturi Bazar, Word No. 04, Road No. 13½, House no. 1320/C, Flat No. 5D, Dhaka-1200, Bangladesh',
-    phone: '+1-202-555-0118',
-    email: 'kevin.gilbert1@gmail.com',
+    name: 'Tên người dùng',
+    address: 'Địa chỉ mặc định',
+    phone: 'Số điện thoại',
+    email: 'Email',
   };
 
-  const orderNote = 'Donec ac vehicula turpis. Aenean sagittis est eu arcu ornare, eget venenatis purus lobortis. Aliquam erat volutpat. Aliquam magna odio.';
+  // MỚI: hàm xử lý khi ReviewModal gọi onSubmit
+  const handleReviewSubmit = async (data: { rating: number; feedback: string }) => {
+    if (selectedSubProductId == null) {
+      console.error('Không xác định được sub_product_id để gửi review');
+      return;
+    }
+
+    const payload: CreateReviewPayload = {
+      sub_product_id: selectedSubProductId,
+      rating: data.rating,
+      comment: data.feedback,
+    };
+
+    try {
+      const result = await createReview(payload);
+      console.log('Review vừa tạo:', result.review);
+      alert('Cảm ơn bạn! Đã gửi đánh giá thành công.');
+    } catch (error: any) {
+      console.error('Lỗi khi gửi review:', error);
+      if (error.response && error.response.data) {
+        alert(error.response.data.message || 'Có lỗi xảy ra khi gửi đánh giá.');
+      } else {
+        alert(error.message || 'Có lỗi xảy ra khi gửi đánh giá.');
+      }
+    } finally {
+      // Đóng modal và reset selectedSubProductId
+      setShowModal(false);
+      setSelectedSubProductId(null);
+    }
+  };
+
+  const orderNote = 'Không có ghi chú đơn hàng.';
 
   return (
     <div className="order-detail-page">
@@ -44,17 +95,22 @@ const OrderDetailPage: React.FC = () => {
           {['PENDING', 'PROCESSING', 'SHIPPED', 'COMPLETED', 'CANCELED'].map((status) => (
             <div
               key={status}
-              className={`step ${status === orderStatus ? 'active' : ''} ${orderStatus === 'CANCELED' ? 'canceled' : ''}`}
+              className={`step ${
+                status.toLowerCase() === order.status.toLowerCase() ? 'active' : ''
+              }`}
             >
               {status}
             </div>
           ))}
         </div>
 
-        <h3>Product ({products.length < 10 ? '0' + products.length : products.length})</h3>
+        <h3>
+          Product ({products.length < 10 ? '0' + products.length : products.length})
+        </h3>
         <table className="product-table">
           <thead>
             <tr>
+              <th>REVIEWS</th>
               <th>PRODUCTS</th>
               <th>PRICE</th>
               <th>QUANTITY</th>
@@ -62,8 +118,27 @@ const OrderDetailPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
+            {products.map((product: any) => (
+              <tr key={product.orderDetailId} style={{ cursor: "pointer" }} onClick={() => navigate(`/product-detail/${product.idproduct}`)}>
+                <td>
+                  {order.status === 'COMPLETED' ? (
+                    <a
+                      href="#"
+                      className="review-details"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setSelectedSubProductId(product.subProductId);
+                        setShowModal(true);
+                      }}
+                    >
+                      Đánh giá
+                    </a>
+                  ) : (
+                    <span style={{ color: '#aaa' }}>Không khả dụng</span>
+                  )}
+                </td>
+
                 <td>
                   <div className="product-info">
                     <img src={product.image} alt={product.name} />
@@ -73,13 +148,75 @@ const OrderDetailPage: React.FC = () => {
                     </div>
                   </div>
                 </td>
-                <td>${product.price}</td>
+                <td>
+                  {product.price.toLocaleString('en-US', { maximumFractionDigits: 2 })} VNĐ
+                </td>
                 <td>x{product.quantity}</td>
-                <td>${product.price * product.quantity}</td>
+                <td>
+                  {(
+                    product.price * product.quantity
+                  ).toLocaleString('en-US', { maximumFractionDigits: 2 })}{' '}
+                  VNĐ
+                </td>
               </tr>
             ))}
           </tbody>
+          {products.length > 0 && (
+            <tfoot>
+              <tr>
+                <td colSpan={4}>
+                  <strong>Discount:</strong>
+                </td>
+                <td>
+                  {order?.discount != null
+                    ? Number(order.discount).toLocaleString('en-US', {
+                        maximumFractionDigits: 2,
+                      })
+                    : '0'}{' '}
+                  VNĐ
+                </td>
+              </tr>
+              <tr>
+                <td colSpan={4}>
+                  <strong>Tax:</strong>
+                </td>
+                <td>
+                  {order?.tax != null
+                    ? Number(order.tax).toLocaleString('en-US', {
+                        maximumFractionDigits: 2,
+                      })
+                    : '0'}{' '}
+                  VNĐ
+                </td>
+              </tr>
+              <tr>
+                <td colSpan={4}>
+                  <strong>Total Price:</strong>
+                </td>
+                <td>
+                  <strong>
+                    {order?.total_price != null
+                      ? Number(order.total_price).toLocaleString('en-US', {
+                          maximumFractionDigits: 2,
+                        })
+                      : '0'}{' '}
+                    VNĐ
+                  </strong>
+                </td>
+              </tr>
+            </tfoot>
+          )}
         </table>
+
+        {/* Gọi ReviewModal, truyền vào isOpen, onClose và onSubmit */}
+        <ReviewModal
+          isOpen={showModal}
+          onClose={() => {
+            setShowModal(false);
+            setSelectedSubProductId(null);
+          }}
+          onSubmit={handleReviewSubmit}
+        />
 
         <div className="info-section">
           <div className="info-box">

@@ -2,18 +2,26 @@ import React from "react";
 import { Input, Button, Form, Typography, Row, Col, message } from "antd";
 import "./TrackOrder.scss";
 import DashboardSidebar from "../../components/DashboardSidebar/DashboardSidebar";
+import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
 
 const TrackOrder: React.FC = () => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   const handleSubmit = (values: any) => {
-    const { orderId, email } = values;
-    // Gửi request API để kiểm tra đơn hàng
-    console.log("Tracking order:", orderId, email);
-    message.success("Tracking request sent");
+    const { orderId } = values;
+
+    if (!orderId) {
+      message.error("Please enter your Order ID");
+      return;
+    }
+
+    // Điều hướng trực tiếp đến trang chi tiết đơn hàng
+    navigate(`/order-detail/${orderId}`);
   };
+
 
   return (
     <div className="track-order-page">
@@ -47,7 +55,7 @@ const TrackOrder: React.FC = () => {
                 <Input placeholder="Order ID..." />
               </Form.Item>
             </Col>
-
+{/* 
             <Col xs={24} md={12}>
               <Form.Item
                 name="email"
@@ -56,7 +64,7 @@ const TrackOrder: React.FC = () => {
               >
                 <Input placeholder="you@example.com" />
               </Form.Item>
-            </Col>
+            </Col> */}
           </Row>
 
           <Button type="primary" htmlType="submit" className="btn-track">
