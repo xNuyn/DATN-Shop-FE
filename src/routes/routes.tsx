@@ -28,6 +28,7 @@ import CategoriesList from '../pages/Admin/CategoriesList/CategoriesList';
 import Review from '../pages/Admin/Review/Review';
 import Dashboard from '../pages/Admin/Dashboard/Dashboard';
 import ProductEdit from '../pages/Admin/ProductEdit/ProductEdit';
+import OrderEdit from '../pages/Admin/OrderEdit/OrderEdit';
 
 export default function RouteComponent() {
     const routeElements = useRoutes([
@@ -231,6 +232,12 @@ export default function RouteComponent() {
             path: '/admin-product-edit/:id',
             element: (
                 <ProductEdit/>
+            ),
+        },
+        {
+            path: '/admin-order-edit/:id',
+            element: (
+                <OrderEdit/>
             ),
         },
     ]);

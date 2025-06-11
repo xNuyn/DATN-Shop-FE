@@ -24,7 +24,7 @@ const Login = () => {
       window.dispatchEvent(new Event("storage"));
 
       if (data.user.role === "admin") {
-        navigate("/admin-product-list");
+        navigate("/admin-dashboard");
       } else {
         navigate("/");
       }

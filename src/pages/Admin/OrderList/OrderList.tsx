@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './OrderList.scss';
 import DashboardAdmin from '../../../components/DashboardAdmin/DashboardAdmin';
 import { FaEdit, FaTrash, FaClipboardList, FaTasks, FaClock, FaTruck, FaClipboardCheck } from 'react-icons/fa';
 import { getOrders, Order } from '../../../services/ordersService';
 
 const OrderList: React.FC = () => {
+  const navigate = useNavigate();
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [ordersPerPage] = useState(5);
@@ -29,7 +31,7 @@ const OrderList: React.FC = () => {
     { key: 'pending',    label: 'Pending',    icon: <FaClock /> },
     { key: 'shipped',    label: 'Shipped',    icon: <FaTruck /> },
     { key: 'completed',  label: 'Completed',  icon: <FaClipboardCheck /> },
-    { key: 'cancel',     label: 'Canceled',   icon: <FaTrash /> }
+    { key: 'canceled',     label: 'Canceled',   icon: <FaTrash /> }
   ];
 
   // Filter orders based on selected status
@@ -52,7 +54,7 @@ const OrderList: React.FC = () => {
   const getStatusClass = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':  return 'completed';
-      case 'cancel':     return 'canceled';
+      case 'canceled':     return 'canceled';
       case 'pending':    return 'pending';
       case 'processing': return 'processing';
       case 'shipped':    return 'shipped';
@@ -101,16 +103,16 @@ const OrderList: React.FC = () => {
             </thead>
             <tbody>
               {displayedOrders.map(order => (
-                <tr key={order.id}>
+                <tr key={order.id} className="clickable-row" style={{ cursor: "pointer" }} onClick={() => navigate(`/admin-order-edit/${order.id}`)}>
                   <td>{order.id}</td>
                   <td>{order.user}</td>
                   <td>{new Date(order.created_at).toLocaleDateString()}</td>
-                  <td>{(+order.total_price).toFixed(2)}</td>
+                  <td>{(+order.total_price).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
                   <td>
                     <span className={`status ${getStatusClass(order.status)}`}>{order.status}</span>
                   </td>
                   <td className="actions">
-                    <button className="edit"><FaEdit /></button>
+                    <button className="edit" onClick={e => { e.stopPropagation(); navigate(`/admin-order-edit/${order.id}`); }}><FaEdit /></button>
                   </td>
                 </tr>
               ))}

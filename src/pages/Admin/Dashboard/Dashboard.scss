@@ -6,10 +6,10 @@
   // ... DashboardAdmin styles ...
 
   .dashboard-page {
+    flex: 1;
     padding: 2rem;
     font-family: sans-serif;
     background: #f9f9fb;
-    width: 100%;
     overflow-y: auto;
 
     .alert-banner {

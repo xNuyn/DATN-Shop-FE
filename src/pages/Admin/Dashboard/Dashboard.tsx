@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Dashboard.scss';
 import DashboardAdmin from '../../../components/DashboardAdmin/DashboardAdmin';
 import {
@@ -13,106 +13,176 @@ import {
   Legend
 } from 'recharts';
 import { FaShoppingCart, FaUserCheck, FaBriefcase, FaDollarSign } from 'react-icons/fa';
+import { fetchDashboardData } from '../../../services/dashboardService';
 
-const stats = [
-  {
-    icon: <FaShoppingCart />,
-    label: 'Total Orders',
-    value: '13,647',
-    change: '+2.3%',
-    changeLabel: 'Last Week',
-    trend: 'up'
-  },
-  {
-    icon: <FaUserCheck />,
-    label: 'New Leads',
-    value: '9,526',
-    change: '+8.1%',
-    changeLabel: 'Last Month',
-    trend: 'up'
-  },
-  {
-    icon: <FaBriefcase />,
-    label: 'Deals',
-    value: '976',
-    change: '–0.3%',
-    changeLabel: 'Last Month',
-    trend: 'down'
-  },
-  {
-    icon: <FaDollarSign />,
-    label: 'Booked Revenue',
-    value: '$123.6k',
-    change: '–10.6%',
-    changeLabel: 'Last Month',
-    trend: 'down'
-  }
+const filterOptions = [
+  { label: '1W', value: 'week' },
+  { label: '1M', value: 'month' },
+  { label: '1Y', value: 'year' }
 ];
 
-// sample monthly data
-const data = [
-  { month: 'Jan', pageViews: 33, clicks: 10 },
-  { month: 'Feb', pageViews: 64, clicks: 12 },
-  { month: 'Mar', pageViews: 46, clicks: 8 },
-  { month: 'Apr', pageViews: 67, clicks: 15 },
-  { month: 'May', pageViews: 48, clicks: 20 },
-  { month: 'Jun', pageViews: 60, clicks: 13 },
-  { month: 'Jul', pageViews: 40, clicks: 7 },
-  { month: 'Aug', pageViews: 42, clicks: 9 },
-  { month: 'Sep', pageViews: 78, clicks: 11 },
-  { month: 'Oct', pageViews: 50, clicks: 25 },
-  { month: 'Nov', pageViews: 62, clicks: 18 },
-  { month: 'Dec', pageViews: 65, clicks: 30 }
-];
+interface ChartDataItem {
+  date: string;
+  revenue: number;
+  buyers: number;
+}
 
 const Dashboard: React.FC = () => {
+  const [stats, setStats] = useState({
+    total_revenue: 0,
+    total_users: 0,
+    total_orders: 0,
+    total_products: 0
+  });
+  const [chartData, setChartData] = useState<ChartDataItem[]>([]);
+  const [activeFilter, setActiveFilter] = useState<'week' | 'month' | 'year'>('week');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchDashboardData(activeFilter);
+        setStats({
+          total_revenue: data.total_revenue,
+          total_users: data.total_users,
+          total_orders: data.total_orders,
+          total_products: data.total_products
+        });
+        const formatted = data.chart_data.map(item => ({
+          date: item.label,
+          revenue: item.revenue,
+          buyers: item.buyer_count
+        }));
+        setChartData(formatted);
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, [activeFilter]);
+
+  const statsDisplay = [
+    {
+      icon: <FaShoppingCart />,
+      label: 'Total Orders',
+      value: stats.total_orders.toLocaleString(),
+      trend: 'up'
+    },
+    {
+      icon: <FaUserCheck />,
+      label: 'Total Users',
+      value: stats.total_users.toLocaleString(),
+      trend: 'up'
+    },
+    {
+      icon: <FaBriefcase />,
+      label: 'Total Products',
+      value: stats.total_products.toLocaleString(),
+      trend: 'up'
+    },
+    {
+      icon: <FaDollarSign />,
+      label: 'Total Revenue',
+      value: `${stats.total_revenue.toLocaleString('vi-VN')} ₫`,
+      trend: 'up'
+    }
+  ];
+
   return (
     <div className="admin-layout">
       <DashboardAdmin />
 
       <div className="dashboard-page">
         <div className="alert-banner">
-          <h3>WELCOM</h3>
+          <h3>WELCOME</h3>
         </div>
 
-        <div className="stats-grid">
-          {stats.map((s, idx) => (
-            <div key={idx} className="stat-card">
-              <div className="icon-box">{s.icon}</div>
-              <div className="stat-content">
-                <div className="stat-label">{s.label}</div>
-                <div className="stat-value">{s.value}</div>
-                <div className={`stat-change ${s.trend}`}>
-                  {s.trend === 'up' ? '▲' : '▼'} {s.change}{' '}
-                  <span className="change-label">{s.changeLabel}</span>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            <div className="stats-grid">
+              {statsDisplay.map((s, idx) => (
+                <div key={idx} className="stat-card">
+                  <div className="icon-box">{s.icon}</div>
+                  <div className="stat-content">
+                    <div className="stat-label">{s.label}</div>
+                    <div className="stat-value">{s.value}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="chart-container">
+              <div className="chart-header">
+                <h3>Performance</h3>
+                <div className="chart-filters">
+                  {filterOptions.map(option => (
+                    <button
+                      key={option.value}
+                      className={option.value === activeFilter ? 'active' : ''}
+                      onClick={() => setActiveFilter(option.value as 'week' | 'month' | 'year')}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+              <ResponsiveContainer width="100%" height={300}>
+                <ComposedChart
+                  data={chartData}
+                  margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
 
-        <div className="chart-container">
-          <div className="chart-header">
-            <h3>Performance</h3>
-            <div className="chart-filters">
-              <button className="active">ALL</button>
-              <button>1M</button>
-              <button>6M</button>
-              <button>1Y</button>
+                  {/* YAxis cho revenue (bên trái) */}
+                  <YAxis
+                    yAxisId="left"
+                    tickFormatter={(value) => `${value.toLocaleString('vi-VN')} ₫`}
+                    tick={{ fontSize: 12 }}
+                  />
+
+                  {/* YAxis cho buyers (bên phải) */}
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    tickFormatter={(value) => `${value} người`}
+                    tick={{ fontSize: 12 }}
+                    domain={[0, 'dataMax']}
+                    allowDecimals={false}
+                  />
+
+                  <Tooltip />
+                  <Legend verticalAlign="top" />
+
+                  {/* Bar sử dụng yAxisId bên trái */}
+                  <Bar
+                    yAxisId="left"
+                    dataKey="revenue"
+                    name="Doanh thu"
+                    barSize={20}
+                    fill="#ff6b35"
+                  />
+
+                  {/* Line sử dụng yAxisId bên phải */}
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="buyers"
+                    name="Người mua"
+                    stroke="#1dd1a1"
+                    strokeWidth={2}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+
             </div>
-          </div>
-          <ResponsiveContainer width="100%" height={300}>
-            <ComposedChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend verticalAlign="top" />
-              <Bar dataKey="pageViews" name="Page Views" barSize={20} fill="#ff6b35" />
-              <Line type="monotone" dataKey="clicks" name="Clicks" stroke="#1dd1a1" strokeWidth={2} />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

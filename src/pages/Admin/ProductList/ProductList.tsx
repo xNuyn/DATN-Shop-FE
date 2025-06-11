@@ -89,7 +89,7 @@ const ProductList: React.FC = () => {
                     </div>
                   </div>
                 </td>
-                <td>{sub.price.toFixed(2)}</td>
+                <td>{sub.price.toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
                 <td>
                   <div>{sub.stock} Item Left</div>
                   <div>{sub.saled_per_month} Sold</div>

@@ -81,6 +81,7 @@ const OrderDetailPage: React.FC = () => {
     }
   };
 
+  const isCompleted = order.status?.toLowerCase() === 'completed';
   const orderNote = 'Không có ghi chú đơn hàng.';
 
   return (
@@ -121,7 +122,7 @@ const OrderDetailPage: React.FC = () => {
             {products.map((product: any) => (
               <tr key={product.orderDetailId} style={{ cursor: "pointer" }} onClick={() => navigate(`/product-detail/${product.idproduct}`)}>
                 <td>
-                  {order.status === 'COMPLETED' ? (
+                  {isCompleted ? (
                     <a
                       href="#"
                       className="review-details"
@@ -226,15 +227,7 @@ const OrderDetailPage: React.FC = () => {
             <p>Phone Number: {billingInfo.phone}</p>
             <p>Email: {billingInfo.email}</p>
           </div>
-
-          <div className="info-box">
-            <h4>Shipping Address</h4>
-            <p>{billingInfo.name}</p>
-            <p>{billingInfo.address}</p>
-            <p>Phone Number: {billingInfo.phone}</p>
-            <p>Email: {billingInfo.email}</p>
-          </div>
-
+          
           <div className="info-box">
             <h4>Order Notes</h4>
             <p>{orderNote}</p>

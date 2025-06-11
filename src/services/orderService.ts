@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 const ORDER_URL = 'http://127.0.0.1:8000/api/order';
 const ORDER_DETAIL_URL = 'http://127.0.0.1:8000/api/order-detail';
@@ -116,5 +116,37 @@ export const getOrdersByUser = async (
       Authorization: `Bearer ${token}`,
     },
   });
+  return res.data;
+};
+
+
+export interface OrderResponse {
+  id: number;
+  subtotal: string;
+  total_price: string;
+  tax: string;
+  discount: string;
+  shipping_cost: string;
+  status: string;
+  created_at: string;
+  status_enum: number;
+  user: number;
+}
+
+export const updateOrderStatus = async (
+  orderId: number,
+  newStatus: string
+): Promise<OrderResponse> => {
+  const token = localStorage.getItem('access_token');
+  const res: AxiosResponse<OrderResponse> = await axios.patch(
+    `${ORDER_URL}/${orderId}`,
+    { status: newStatus },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
   return res.data;
 };

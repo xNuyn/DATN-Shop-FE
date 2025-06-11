@@ -5,11 +5,12 @@ import "./CustomerList.scss";
 import DashboardAdmin from "../../../components/DashboardAdmin/DashboardAdmin";
 import { getUsers, deleteUser } from "../../../services/userService";
 import { FaUsers, FaBox, FaHeadset, FaReceipt } from "react-icons/fa";
+import type { ReactElement } from "react";
 
 const itemsPerPage = 8;
 
 interface StatCard {
-  icon: JSX.Element;
+  icon: ReactElement;
   title: string;
   value: string;
   delta: string;

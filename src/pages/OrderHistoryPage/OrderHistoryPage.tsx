@@ -26,7 +26,6 @@ const OrderHistoryPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  // Mỗi trang hiển thị 10 orders (trùng với limit truyền vào API)
   const ORDERS_PER_PAGE = 10;
 
   useEffect(() => {
@@ -37,11 +36,8 @@ const OrderHistoryPage: React.FC = () => {
     const fetchOrders = async () => {
       setIsLoading(true);
       try {
-        // Gọi API với page và limit tương ứng
         const res = await getMyOrders(currentPage, ORDERS_PER_PAGE);
-        // res.data chứa mảng orders của trang hiện tại
         setOrders(res.data);
-        // res.meta.last_page chứa tổng số trang
         setTotalPages(res.meta.last_page);
       } catch (error) {
         console.error("Không thể lấy danh sách đơn hàng.", error);
@@ -51,7 +47,6 @@ const OrderHistoryPage: React.FC = () => {
     };
 
     fetchOrders();
-    // Luôn scroll lên trên sau khi fetch xong
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
 
@@ -63,6 +58,25 @@ const OrderHistoryPage: React.FC = () => {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${hours}:${minutes} ${day}-${month}-${year}`;
+  };
+
+  const handleCancelOrder = async (orderId: number) => {
+    if (!window.confirm("Bạn có chắc muốn hủy đơn hàng này không?")) return;
+
+    try {
+      // Gọi API hủy đơn (cần tạo `cancelOrder` trong `orderService.ts`)
+      await cancelOrder(orderId);
+
+      // Cập nhật lại danh sách đơn hàng
+      const res = await getMyOrders(currentPage, ORDERS_PER_PAGE);
+      setOrders(res.data);
+      setTotalPages(res.meta.last_page);
+
+      alert("Đơn hàng đã được hủy.");
+    } catch (error) {
+      console.error("Không thể hủy đơn hàng.", error);
+      alert("Có lỗi xảy ra khi hủy đơn hàng.");
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -105,6 +119,7 @@ const OrderHistoryPage: React.FC = () => {
                   <th>DATE</th>
                   <th>TOTAL</th>
                   <th>ACTION</th>
+                  <th>CANCEL ORDER</th>
                 </tr>
               </thead>
               <tbody>
@@ -134,6 +149,18 @@ const OrderHistoryPage: React.FC = () => {
                       >
                         View Details →
                       </a>
+                    </td>
+                    <td>
+                      {order.status.toUpperCase() === "PENDING" ? (
+                        <button
+                          className="cancel-button"
+                          onClick={() => handleCancelOrder(order.id)}
+                        >
+                          Hủy đơn
+                        </button>
+                      ) : (
+                        "-"
+                      )}
                     </td>
                   </tr>
                 ))}

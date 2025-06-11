@@ -97,10 +97,16 @@ const DashboardAdmin: React.FC = () => {
           <FaCubes />
           <span>Inventory</span>
         </div> */}
-        <div className="menu-item" onClick={() => navigate("/admin-order-list")}>
+        <div className="menu-item" onClick={() => toggleMenu('orders')}>
           <FaShoppingBag />
           <span>Orders</span>
         </div>
+        {openMenus.orders && (
+          <div className="submenu">
+            <div className="submenu-item" onClick={() => navigate("/admin-order-list")}>List</div>
+            <div className="submenu-item" onClick={() => navigate("/admin-order-edit/:id")}>Detail</div>
+          </div>
+        )}
         {/* <div className="menu-item">
           <FaCartPlus />
           <span>Purchases</span>
