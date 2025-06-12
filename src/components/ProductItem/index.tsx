@@ -4,16 +4,16 @@ import "./product-item.scss";
 import { useNavigate } from "react-router-dom";
 
 interface ProductItemProps {
-    id: number;
-    name: string;
-    description: string;
-    image: string;
-    price_min: number;
-    price_max: number;
-    category: number;
-    brands: number;
-    sold_per_month: number;
-    discount_percentage_max: number | null;
+    id: number | 0 ;
+    name: string | '';
+    description: string | '';
+    image: string | '';
+    price_min: number | 0;
+    price_max: number | 0;
+    category: number | 0;
+    brands: number | 0;
+    sold_per_month: number | 0;
+    discount_percentage_max: number | 0;
 }
 
 const ProductItem: FC<ProductItemProps> = memo(

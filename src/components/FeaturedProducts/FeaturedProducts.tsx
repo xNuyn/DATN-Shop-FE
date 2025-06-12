@@ -122,7 +122,25 @@ const FeaturedProducts = () => {
 
       <div className="product-grid">
         {filteredProducts.slice(0, 10).map((product, index) => (
-          <ProductItem key={index} {...product} />
+          <ProductItem
+            key={product.tagName}
+            id={Number(product.newPrice)}
+            // name={product.name}
+            // description={product.description}
+            // image={product.image}
+            // price_min={product.price_min}
+            price_max={Number(product.newPrice)}
+            // category={product.category}
+            brands={Number(product.newPrice)}
+            sold_per_month={Number(product.newPrice)}
+            discount_percentage_max={Number(product.newPrice)}
+
+            name={product.tagName}
+            description={product.productName}
+            image={product.image}
+            price_min={Number(product.newPrice)}      // ép thành số
+            category={Number(product.category)}
+          />
         ))}
       </div>
     </div>
