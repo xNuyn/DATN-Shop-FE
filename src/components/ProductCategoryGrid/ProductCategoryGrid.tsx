@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./ProductCategoryGrid.scss";
-import { SubProduct, fetchTopSubProducts, SubProductTopLists } from "../../services/subproductService"; // điều chỉnh path import nếu cần
+import { SubProduct, fetchTopSubProducts, SubProductTopLists } from "../../services/subproductService";
 import { useNavigate } from "react-router-dom";
 
 interface ProductItem {

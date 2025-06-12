@@ -1,4 +1,3 @@
-// src/pages/Admin/CategoryList/CategoriesList.tsx
 import React, { useEffect, useState } from "react";
 import "./CategoriesList.scss";
 import DashboardAdmin from "../../../components/DashboardAdmin/DashboardAdmin";
@@ -68,7 +67,6 @@ const CategoriesList: React.FC = () => {
       ) {
         try {
           await deleteCategory(id);
-          // xoá khỏi state để UI cập nhật
           setSubs((prev) => prev.filter((c) => c.id !== id));
         } catch (err) {
           console.error("Delete failed:", err);
@@ -150,12 +148,11 @@ const CategoriesList: React.FC = () => {
               Previous
             </button>
 
-            {/* Hiển thị tối đa 3 trang: current - 1, current, current + 1 nếu có */}
             {Array.from({ length: totalPages }, (_, i) => i + 1)
               .filter((page) =>
-                page === 1 || // luôn hiển thị trang 1
-                page === totalPages || // luôn hiển thị trang cuối
-                Math.abs(page - currentPage) <= 1 // hiển thị các trang xung quanh currentPage
+                page === 1 ||
+                page === totalPages ||
+                Math.abs(page - currentPage) <= 1
               )
               .map((page, idx, arr) => {
                 const prevPage = arr[idx - 1];

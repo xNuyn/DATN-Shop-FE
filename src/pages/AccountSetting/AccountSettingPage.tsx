@@ -3,12 +3,10 @@
   import DashboardSidebar from "../../components/DashboardSidebar/DashboardSidebar";
   import { getUserById, updateUserById } from "../../services/userService";
   import { useBillingContext } from "../../utils/BillingContext";
-  import { useParams, useNavigate } from "react-router-dom";
+  import { useParams } from "react-router-dom";
 
   const AccountSettingPage: React.FC = () => {
-    // const userId = parseInt(localStorage.getItem("user_id") || "0");
     const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
     const userId = id ? Number(id) : null;
     const [accountInfo, setAccountInfo] = useState({
       avatar: "",
@@ -59,7 +57,6 @@
       formData.append("gender", accountInfo.gender);
       formData.append("address", accountInfo.address);
       formData.append("zip_code", accountInfo.zipCode);
-      // Nếu có avatar file upload: formData.append("avatar", avatarFile);
 
       try {
         const res = await updateUserById(userId, formData);
@@ -89,7 +86,6 @@
     try {
       const res = await updateUserById(userId, formData);
       console.log("Billing updated:", res);
-      // localStorage.setItem("billingInfo", JSON.stringify(billingInfo));
       window.location.reload();
     } catch (err) {
       console.error("Update failed:", err);

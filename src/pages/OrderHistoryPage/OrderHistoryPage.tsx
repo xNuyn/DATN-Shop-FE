@@ -1,10 +1,10 @@
-// src/pages/OrderHistoryPage/OrderHistoryPage.tsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyOrders } from "../../services/orderService";
 import Pagination from "../../components/Pagination/Pagination";
 import DashboardSidebar from "../../components/DashboardSidebar/DashboardSidebar";
 import "./OrderHistoryPage.scss";
+import { updateOrderStatus } from "../../services/orderService";
 
 interface Order {
   id: number;
@@ -64,10 +64,8 @@ const OrderHistoryPage: React.FC = () => {
     if (!window.confirm("Bạn có chắc muốn hủy đơn hàng này không?")) return;
 
     try {
-      // Gọi API hủy đơn (cần tạo `cancelOrder` trong `orderService.ts`)
-      await cancelOrder(orderId);
+      await updateOrderStatus(orderId, 'canceled');
 
-      // Cập nhật lại danh sách đơn hàng
       const res = await getMyOrders(currentPage, ORDERS_PER_PAGE);
       setOrders(res.data);
       setTotalPages(res.meta.last_page);

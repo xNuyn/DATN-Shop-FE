@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from 'react';
+import { useState, useEffect  } from 'react';
 import './ShoppingCart.scss';
 import DashboardSidebar from "../../components/DashboardSidebar/DashboardSidebar";
 import { useNavigate } from "react-router-dom";

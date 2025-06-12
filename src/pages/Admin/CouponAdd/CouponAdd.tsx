@@ -1,4 +1,3 @@
-// src/pages/Admin/CouponAdd/CouponAdd.tsx
 import React, { useState } from "react";
 import "./CouponAdd.scss";
 import DashboardAdmin from "../../../components/DashboardAdmin/DashboardAdmin";

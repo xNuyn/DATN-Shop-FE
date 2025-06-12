@@ -7,7 +7,6 @@ const ForgotPassword: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Gửi mã xác nhận đến email
     console.log("Sending code to:", email);
   };
 

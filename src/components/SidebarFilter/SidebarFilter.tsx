@@ -39,7 +39,6 @@ const SidebarFilter = ({
   const [brandOptions, setBrandOptions] = useState<Category[]>([]);
   const [allCategories, setAllCategories] = useState<Category[]>([]);
 
-  // 1. Fetch toàn bộ categories (cả cấp 1 và 2), rồi tách ra root
   useEffect(() => {
     (async () => {
       try {
@@ -47,7 +46,6 @@ const SidebarFilter = ({
         const raw: Category[] = response || [];
         setAllCategories(raw);
 
-        // Lọc ra root (parent = null)
         const roots = raw.filter((cat) => cat.parent === null);
         setRootCategories(roots);
       } catch (err) {
@@ -56,7 +54,6 @@ const SidebarFilter = ({
     })();
   }, []);
 
-  // 2. Khi selectedCategories hoặc rootCategories thay đổi, load brandOptions
   useEffect(() => {
     if (selectedCategories.length === 0) {
       setBrandOptions([]);
@@ -65,7 +62,6 @@ const SidebarFilter = ({
 
     (async () => {
       try {
-        // Lấy list id hiện đang là root
         const selectedRootIds = rootCategories
           .filter((c) => selectedCategories.includes(String(c.id)))
           .map((c) => c.id);
@@ -83,7 +79,6 @@ const SidebarFilter = ({
     })();
   }, [selectedCategories, rootCategories]);
 
-  // 3. Nếu selectedBrands có id không nằm trong brandOptions, thì lọc bỏ
   useEffect(() => {
     const validBrandIds = brandOptions.map((b) => String(b.id));
     const filtered = selectedBrands.filter((id) =>
@@ -94,9 +89,7 @@ const SidebarFilter = ({
     }
   }, [brandOptions]);
 
-  // 4. Hàm xóa filter (giữ nguyên như bạn đã cài)
   const removeFilter = (value: string) => {
-    // Nếu user click vào tag có label = tên category cấp 1
     const categoryToRemove = rootCategories.find((cat) => cat.name === value);
     if (categoryToRemove) {
       const newCategories = selectedCategories.filter(
@@ -111,28 +104,23 @@ const SidebarFilter = ({
       return;
     }
 
-    // Nếu user click vào tag có label = tên brand (subcategory)
     const brandToRemove = brandOptions.find((b) => b.name === value);
     if (brandToRemove) {
       onBrandChange(selectedBrands.filter((id) => id !== String(brandToRemove.id)));
       return;
     }
 
-    // Nếu user click vào giá tiền
     if (selectedPrice === value) {
       onPriceChange("");
     }
   };
 
-  // 5. Render Active Filters với tất cả id → name từ allCategories
   const renderActiveFilters = () => {
-    // 5.1. Build map id→name từ allCategories
     const idToName: Record<string, string> = {};
     allCategories.forEach((cat) => {
       idToName[String(cat.id)] = cat.name;
     });
 
-    // 5.2. Lấy ra tất cả label để hiển thị
     const allFilters: string[] = [];
     selectedCategories.forEach((id) => {
       allFilters.push(idToName[id] || id);

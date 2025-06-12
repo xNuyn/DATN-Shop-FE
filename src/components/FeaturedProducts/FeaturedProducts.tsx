@@ -1,4 +1,3 @@
-// src/components/FeaturedProducts/FeaturedProducts.tsx
 import { useState } from "react";
 import ProductItem from "../ProductItem";
 import "./FeaturedProducts.scss";

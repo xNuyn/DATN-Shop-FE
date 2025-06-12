@@ -78,6 +78,9 @@
       &.active {
         background-color: #ff6600;
         color: white;
+        padding-left: 8px;
+        border-left: 4px solid #ffa000;
+        box-shadow: inset 4px 0 0 #ffa000;
 
         svg {
           color: white;
@@ -102,8 +105,21 @@
         color: #a6aeb8;
 
         &.active {
+          background-color: #333e52;
           color: #ff6600;
           font-weight: bold;
+          padding-left: 14px;
+
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            background-color: #ff6600;
+            border-radius: 2px;
+          }
         }
 
         &:hover {

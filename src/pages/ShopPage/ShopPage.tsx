@@ -5,13 +5,12 @@ import SidebarFilter from "../../components/SidebarFilter/SidebarFilter";
 import Pagination from "../../components/Pagination/Pagination";
 import "./ShopPage.scss";
 import { fetchFilteredProducts, Product, PaginatedResponse } from "../../services/productService";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 const PRODUCTS_PER_PAGE = 20;
 
 const ShopPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const categoryQuery = searchParams.get("categories") || "";
   const keywordQuery = searchParams.get("keyword") || "";
 

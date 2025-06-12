@@ -17,7 +17,6 @@ import Checkout from '../pages/Checkout/Checkout';
 import OrderSuccessPage from '../pages/SuccessPage/OrderSuccessPage';
 import OrderDetailPage from '../pages/OrderDetail/OrderDetailPage';
 import ChatPage from '../pages/ChatPage/ChatPage';
-import ProductList from '../pages/Admin/ProductList/ProductList';
 import OrderList from '../pages/Admin/OrderList/OrderList';
 import CouponList from '../pages/Admin/CouponList/CouponList';
 import CouponAdd from '../pages/Admin/CouponAdd/CouponAdd';
@@ -27,8 +26,10 @@ import CustomerDetail from '../pages/Admin/CustomerDetail/CustomerDetail';
 import CategoriesList from '../pages/Admin/CategoriesList/CategoriesList';
 import Review from '../pages/Admin/Review/Review';
 import Dashboard from '../pages/Admin/Dashboard/Dashboard';
-import ProductEdit from '../pages/Admin/ProductEdit/ProductEdit';
 import OrderEdit from '../pages/Admin/OrderEdit/OrderEdit';
+import ProductList from '../pages/Admin/ProductList/ProductList';
+import SubProductList from '../pages/Admin/SubProductList/SubProductList';
+import SubProductEdit from '../pages/Admin/SubProductEdit/SubProductEdit';
 
 export default function RouteComponent() {
     const routeElements = useRoutes([
@@ -169,12 +170,6 @@ export default function RouteComponent() {
             ),
         },
         {
-            path: '/admin-product-list',
-            element: (
-                <ProductList/>
-            ),
-        },
-        {
             path: '/admin-order-list',
             element: (
                 <OrderList/>
@@ -229,15 +224,27 @@ export default function RouteComponent() {
             ),
         },
         {
-            path: '/admin-product-edit/:id',
+            path: '/admin-subproduct-edit/:id',
             element: (
-                <ProductEdit/>
+                <SubProductEdit/>
             ),
         },
         {
             path: '/admin-order-edit/:id',
             element: (
                 <OrderEdit/>
+            ),
+        },
+        {
+            path: '/admin-product-list',
+            element: (
+                <ProductList/>
+            ),
+        },
+                {
+            path: '/admin-subproduct-list/:id',
+            element: (
+                <SubProductList/>
             ),
         },
     ]);

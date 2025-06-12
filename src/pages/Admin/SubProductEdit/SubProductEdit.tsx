@@ -1,14 +1,13 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import './ProductEdit.scss';
+import './SubProductEdit.scss';
 import { useParams, useNavigate } from 'react-router-dom';
 import DashboardAdmin from '../../../components/DashboardAdmin/DashboardAdmin';
 import { getSubproductById, updateSubProductById, SubProduct } from '../../../services/subproductService';
 import { uploadImage } from '../../../services/uploadService';
 import { getCategoryById, Category } from '../../../services/categoryService';
 import { getBrandById, Brand } from '../../../services/brandService';
-import { updateProductById } from '../../../services/productService';
 
-const ProductEdit: React.FC = () => {
+const SubProductEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const subId = Number(id);
   const navigate = useNavigate();
@@ -102,7 +101,7 @@ const ProductEdit: React.FC = () => {
     <div className="admin-layout">
       <DashboardAdmin />
       <form className="create-product" onSubmit={handleSubmit} encType="multipart/form-data">
-        <h2>EDIT PRODUCT</h2>
+        <h2>EDIT SUB-PRODUCT</h2>
 
         <div className="form-content">
           {/* ========== CỘT TRÁI ========= */}
@@ -216,4 +215,4 @@ const ProductEdit: React.FC = () => {
   );
 };
 
-export default ProductEdit;
+export default SubProductEdit;

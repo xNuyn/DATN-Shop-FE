@@ -1,4 +1,3 @@
-// src/pages/OrderDetailPage.tsx
 import React, { useEffect, useState } from 'react';
 import './OrderDetailPage.scss';
 import DashboardSidebar from '../../components/DashboardSidebar/DashboardSidebar';
@@ -13,7 +12,6 @@ const OrderDetailPage: React.FC = () => {
   const { id } = useParams();
   const [showModal, setShowModal] = useState(false);
 
-  // MỚI: state lưu sub_product_id của sản phẩm được chọn để đánh giá
   const [selectedSubProductId, setSelectedSubProductId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -31,7 +29,6 @@ const OrderDetailPage: React.FC = () => {
 
   if (!order) return <div>Đang tải đơn hàng...</div>;
 
-  // MỚI: map thêm field subProductId = detail.sub_product.id
   const products = order.order_details.map((detail: any) => ({
     orderDetailId: detail.id,
     subProductId: detail.sub_product.id,
@@ -50,7 +47,6 @@ const OrderDetailPage: React.FC = () => {
     email: 'Email',
   };
 
-  // MỚI: hàm xử lý khi ReviewModal gọi onSubmit
   const handleReviewSubmit = async (data: { rating: number; feedback: string }) => {
     if (selectedSubProductId == null) {
       console.error('Không xác định được sub_product_id để gửi review');
@@ -75,7 +71,6 @@ const OrderDetailPage: React.FC = () => {
         alert(error.message || 'Có lỗi xảy ra khi gửi đánh giá.');
       }
     } finally {
-      // Đóng modal và reset selectedSubProductId
       setShowModal(false);
       setSelectedSubProductId(null);
     }
@@ -209,7 +204,6 @@ const OrderDetailPage: React.FC = () => {
           )}
         </table>
 
-        {/* Gọi ReviewModal, truyền vào isOpen, onClose và onSubmit */}
         <ReviewModal
           isOpen={showModal}
           onClose={() => {

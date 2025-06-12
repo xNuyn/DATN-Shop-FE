@@ -9,10 +9,40 @@ export interface Product {
   image: string;
   price_min: number;
   price_max: number;
-  categories: number;
+  category: number;
   brands: number;
   sold_per_month: number;
   discount_percentage_max: number | null;
+}
+
+export interface PaginationLink {
+  url: string | null;
+  label: string;
+  active: boolean;
+}
+
+export interface ProductListLinks {
+  first: string;
+  last: string;
+  prev: string | null;
+  next: string | null;
+}
+
+export interface ProductListMeta {
+  current_page: number;
+  from: number;
+  last_page: number;
+  links: PaginationLink[];
+  path: string;
+  per_page: number;
+  to: number;
+  total: number;
+}
+
+export interface ProductListResponse {
+  data: Product[];
+  links: ProductListLinks;
+  meta: ProductListMeta;
 }
 
 // Kết cấu của response khi phân trang
@@ -23,7 +53,6 @@ export interface PaginatedResponse {
     last_page: number;
     per_page: number;
     total: number;
-    // ... có thể còn các field khác nhưng ta chỉ cần những trường này để tính toán.
   };
 }
 
@@ -71,4 +100,14 @@ export const updateProductById = async (id: number, formData: FormData) => {
     },
   });
   return res.data;
+};
+
+export const fetchProductList = async (
+  page: number = 1,
+  limit: number = 8
+): Promise<ProductListResponse> => {
+  const response = await axios.get(`${BASE_URL}/product`, {
+    params: { page, limit },
+  });
+  return response.data as ProductListResponse;
 };

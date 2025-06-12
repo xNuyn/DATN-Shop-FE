@@ -1,4 +1,3 @@
-// src/pages/Admin/CustomerList/CustomerList.tsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CustomerList.scss";

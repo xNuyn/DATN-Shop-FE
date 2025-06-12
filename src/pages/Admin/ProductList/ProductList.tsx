@@ -2,57 +2,69 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ProductList.scss';
 import DashboardAdmin from '../../../components/DashboardAdmin/DashboardAdmin';
-import { FaStar, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
-import { getSubproducts, deleteSubProduct, SubProduct, Review } from '../../../services/subproductService';
+import { FaEdit, FaTrash } from 'react-icons/fa';
+import {
+  fetchProductList,
+  Product,
+  ProductListResponse,
+} from '../../../services/productService';
+import { getCategories, Category } from '../../../services/categoryService';
 
 const ProductList: React.FC = () => {
-  const [products, setProducts] = useState<SubProduct[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categoriesMap, setCategoriesMap] = useState<Record<number, string>>({});
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const itemsPerPage = 8;
   const navigate = useNavigate();
 
+  // Load all categories once
   useEffect(() => {
-    const fetchData = async () => {
+    const loadCategories = async () => {
       try {
-        const data = await getSubproducts();
-        setProducts(data);
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
+        const cats: Category[] = await getCategories();
+        const map: Record<number, string> = {};
+        cats.forEach(c => {
+          map[c.id] = c.name;
+        });
+        setCategoriesMap(map);
+      } catch (err) {
+        console.error('Fetch categories failed:', err);
       }
     };
-    fetchData();
+    loadCategories();
   }, []);
 
-  const totalPages = Math.ceil(products.length / itemsPerPage);
-  const paginatedProducts = products.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // Load products
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const response: ProductListResponse = await fetchProductList(currentPage, itemsPerPage);
+        setProducts(response.data);
+        setTotalPages(response.meta.last_page);
+      } catch (error) {
+        console.error('Failed to load products:', error);
+      }
+    };
+    loadProducts();
+  }, [currentPage]);
 
   const handleDelete = async (id: number) => {
-    if (
-      window.confirm(`Are you sure you want to delete subproduct #${id}?`)
-    ) {
+    if (window.confirm(`Are you sure you want to delete product #${id}?`)) {
       try {
-        await deleteSubProduct(id);
-        // xoá khỏi state để UI cập nhật
-        setProducts((prev) => prev.filter((c) => c.id !== id));
+        const response: ProductListResponse = await fetchProductList(currentPage, itemsPerPage);
+        setProducts(response.data);
+        setTotalPages(response.meta.last_page);
       } catch (err) {
-        console.error("Delete failed:", err);
-        alert("Failed to delete subproduct");
+        console.error('Delete failed:', err);
+        alert('Failed to delete product');
       }
     }
   };
 
   const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
-  };
-
-  // Helper: calculate average rating
-  const avgRating = (reviews: Review[]): number => {
-    if (!reviews.length) return 0;
-    const sum = reviews.reduce((total, r) => total + r.rating, 0);
-    return parseFloat((sum / reviews.length).toFixed(1));
   };
 
   return (
@@ -61,79 +73,70 @@ const ProductList: React.FC = () => {
       <div className="product-list">
         <div className="header">
           <h2>PRODUCT LIST</h2>
-          <button className="add-product">Add Product</button>
+          <button className="btn-add" onClick={() => navigate('/admin-product-add')}>Add Product</button>
         </div>
         <table className="product-table">
           <thead>
             <tr>
-              {/* <th></th> */}
-              <th>Product Name & Size</th>
+              <th className="col-img">Image</th>
+              <th>Name</th>
               <th>Price</th>
-              <th>Stock</th>
               <th>Category</th>
-              <th>Rating</th>
-              <th>Reviews</th>
+              <th>Sold</th>
+              <th>Discount Max(%)</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {paginatedProducts.map((sub) => (
-              <tr key={sub.id}>
-                {/* <td><input type="checkbox" /></td> */}
+            {products.map((product) => (
+              <tr key={product.id} className="product-row">
                 <td>
-                  <div className="product-info" onClick={() => navigate(`/admin-product-edit/${sub.id}`)} style={{ cursor: "pointer" }}>
-                    <img src={sub.image} alt={sub.product.name} className="product-img" />
-                    <div className="product-details">
-                      <div className="name">{sub.product.name}</div>
-                      <div className="size">Size: {sub.size || 'N/A'}</div>
-                    </div>
-                  </div>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="product-img"
+                    onClick={() => navigate(`/admin-subproduct-list/${product.id}`)}
+                  />
                 </td>
-                <td>{sub.price.toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
-                <td>
-                  <div>{sub.stock} Item Left</div>
-                  <div>{sub.saled_per_month} Sold</div>
+                <td className="cell-name" 
+                    style={{ cursor: "pointer" }}
+                    onClick={() => navigate(`/admin-subproduct-list/${product.id}`)}>
+                    {product.name}
                 </td>
-                <td>{sub.product.category}</td>
-                <td>
-                  <span className="rating"><FaStar /> {avgRating(sub.reviews)}</span>
+                <td className="cell-price">
+                    {product.price_min === product.price_max
+                    ? product.price_min.toLocaleString('en-US')
+                    : `${product.price_min.toLocaleString('en-US')} - ${product.price_max.toLocaleString('en-US')}`}
                 </td>
-                <td>
-                  <div>{sub.reviews.length} Review{sub.reviews.length !== 1 ? 's' : ''}</div>
-                </td>
-                <td className="actions">
-                  {/* <button className="view"><FaEye /></button> */}
-                  <button className="edit" onClick={() => navigate(`/admin-product-edit/${sub.id}`)}><FaEdit /></button>
-                  <button className="delete" style={{ cursor: "pointer" }} onClick={() => handleDelete(sub.id)}><FaTrash /></button>
+                <td className="cell-category">{categoriesMap[product.category] || 'Unknown'}</td>
+                <td className="cell-sold">{product.sold_per_month}</td>
+                <td className="cell-discount">{product.discount_percentage_max ?? 0}%</td>
+                <td className="cell-action">
+                  <button className="btn action-edit" onClick={() => navigate(`/admin-subproduct-list/${product.id}`)}>
+                    <FaEdit />
+                  </button>
+                  <button className="btn action-delete" onClick={() => handleDelete(product.id)}>
+                    <FaTrash />
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-
         <div className="pagination">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
+          <button className="btn-page" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
             Previous
           </button>
-
-          {/* Hiển thị tối đa 3 trang: current - 1, current, current + 1 nếu có */}
           {Array.from({ length: totalPages }, (_, i) => i + 1)
-            .filter((page) =>
-              page === 1 || // luôn hiển thị trang 1
-              page === totalPages || // luôn hiển thị trang cuối
-              Math.abs(page - currentPage) <= 1 // hiển thị các trang xung quanh currentPage
-            )
+            .filter(page => page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1)
             .map((page, idx, arr) => {
-              const prevPage = arr[idx - 1];
-              const showDots = prevPage && page - prevPage > 1;
+              const prev = arr[idx - 1];
+              const showDots = prev && page - prev > 1;
               return (
                 <React.Fragment key={page}>
                   {showDots && <span className="dots">...</span>}
                   <button
-                    className={currentPage === page ? 'active' : ''}
+                    className={`btn-page ${currentPage === page ? 'active' : ''}`}
                     onClick={() => handlePageChange(page)}
                   >
                     {page}
@@ -141,11 +144,7 @@ const ProductList: React.FC = () => {
                 </React.Fragment>
               );
             })}
-
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
+          <button className="btn-page" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
             Next
           </button>
         </div>

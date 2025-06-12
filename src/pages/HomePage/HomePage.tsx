@@ -11,9 +11,6 @@ const HomePage = () => {
         <div className="promo-banner">
         <div className="promo-left">
             <div className="promo-content">
-                {/* <h4 className="promo-subtitle">THE BEST PLACE TO PLAY</h4>
-                <h2 className="promo-title">Xbox Consoles</h2>
-                <p className="promo-description">Save up to 50% on select Xbox games. Get 3 months of PC Game Pass for $2 USD.</p> */}
                 <button className="promo-button" onClick={() =>
                   {
                     navigate("/shop-page");
@@ -21,20 +18,12 @@ const HomePage = () => {
                 }>SHOP NOW</button>
             </div>
             <div className="promo-bg" />
-            {/* <div className="promo-price">$299</div> */}
         </div>
         <div className="promo-right">
           <div className="promo-card pixel">
-            {/* <div className="promo-sale-badge">29% OFF</div>
-            <div className="promo-card-content">
-                <p>New Google Pixel 6 Pro</p>
-                <button>SHOP NOW</button>
-            </div> */}
           </div>
           <div className="promo-card xiaomi">
             <div className="promo-card-content">
-                {/* <p>Xiaomi FlipBuds Pro<br /><span className="blue">$299 USD</span></p> */}
-                {/* <button>SHOP NOW</button> */}
             </div>
           </div>
         </div>

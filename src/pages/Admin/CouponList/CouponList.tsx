@@ -1,4 +1,3 @@
-// src/pages/Admin/CouponList/CouponList.tsx
 import React, { useEffect, useState } from "react";
 import "./CouponList.scss";
 import DashboardAdmin from "../../../components/DashboardAdmin/DashboardAdmin";
@@ -19,6 +18,7 @@ const formatDate = (iso: string) => {
 const CouponList: React.FC = () => {
   const navigate = useNavigate();
   const [coupons, setCoupons] = useState<Discount[]>([]);
+  const [allCoupons, setAllCoupons] = useState<Discount[]>([]);
   const [meta, setMeta] = useState<PaginatedDiscounts["meta"] | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -43,19 +43,34 @@ const CouponList: React.FC = () => {
     })();
   }, [currentPage]);
 
+  useEffect(() => {
+    // 2) Load "all pages", gom về allCoupons
+    if (!meta) return;
+    (async () => {
+      let page = 1;
+      const perPage = couponsPerPage;
+      let aggregated: Discount[] = [];
+
+      // Lặp từ page 1 -> last_page
+      while (page <= meta.last_page) {
+        const { data } = await getDiscounts(page, perPage);
+        aggregated = aggregated.concat(data);
+        page++;
+      }
+
+      setAllCoupons(aggregated);
+    })();
+  }, [meta]);
+
   const totalPages = meta ? meta.last_page : 1;
 
   // tính số lượng cho promo cards
-  const smallCount = coupons.filter(
-    (c) => Number(c.discount_percentage) < 10
-  ).length;
-  const mediumCount = coupons.filter((c) => {
-    const pct = Number(c.discount_percentage);
-    return pct > 10 && pct < 30;
+  const smallCount = allCoupons.filter(c => +c.discount_percentage < 10).length;
+  const mediumCount = allCoupons.filter(c => {
+    const p = +c.discount_percentage;
+    return p >= 10 && p < 30;
   }).length;
-  const largeCount = coupons.filter(
-    (c) => Number(c.discount_percentage) > 20
-  ).length;
+  const largeCount = allCoupons.filter(c => +c.discount_percentage >= 30).length;
 
   const handleDelete = async (id: number) => {
     if (

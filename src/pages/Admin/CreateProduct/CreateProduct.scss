@@ -16,202 +16,222 @@
       font-weight: bold;
     }
 
-    .form-card {
-      background-color: #fff;
-      border-radius: 12px;
-      padding: 1.5rem;
-      max-width: 900px;
-      margin: 0 auto;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    .form-content {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
 
-      h4 {
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-        color: #303250;
-      }
+      /* -------- CỘT TRÁI -------- */
+      .left-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        flex-shrink: 0;
 
-      .upload-box {
-        border: 2px dashed #ccc;
-        padding: 2rem;
-        text-align: center;
-        border-radius: 12px;
-        color: #999;
-        margin-bottom: 2rem;
+        .product-preview {
+          width: 400px;
+          padding: 1rem;
+          background-color: #ffffff;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+          text-align: center;
 
-        .upload-icon {
-          font-size: 2rem;
-          margin-bottom: 1rem;
-          color: #ff6b35;
-        }
+          .image-box {
+            background-color: #f1f3f6;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1rem;
 
-        .browse {
-          color: #ff6b35;
-          font-weight: bold;
-          cursor: pointer;
-        }
-      }
+            img {
+              max-width: 100%;
+              height: auto;
+              border-radius: 8px;
+            }
+          }
 
-      .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1rem;
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-
-          label {
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+          h3 {
+            font-size: 16px;
+            margin: 0.5rem 0 0;
             color: #333;
           }
 
-          input,
-          select {
-            padding: 0.6rem 0.8rem;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 0.95rem;
+          .product-id {
+            font-size: 14px;
+            color: #888;
+          }
+        }
+
+        .specification {
+          width: 400px;
+          background-color: #fff;
+          border-radius: 12px;
+          padding: 1.5rem;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+
+          h4 {
+            margin-bottom: 1rem;
+            color: #303250;
+            font-size: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+          }
+
+          ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+
+            li {
+              display: flex;
+              padding: 0.75rem 0;
+              border-bottom: 1px solid #f0f0f0;
+
+              &:last-child {
+                border-bottom: none;
+              }
+
+              .label {
+                flex: 0 0 130px;
+                font-weight: 600;
+                color: #505480;
+              }
+
+              .value {
+                flex: 1;
+                color: #666;
+              }
+            }
           }
         }
       }
 
-      .tag-box {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.5rem;
-        background: #fff;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        padding: 0.6rem 0.8rem;
-        min-height: 45px;
+      /* -------- CỘT PHẢI: FORM -------- */
+      .form-card {
+        background-color: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        width: 900px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 
-        .tag {
-          background-color: #ff6b35;
-          color: white;
-          padding: 0.3rem 0.6rem;
-          border-radius: 6px;
-          font-size: 0.85rem;
-          display: flex;
-          align-items: center;
+        h4 {
+          margin-top: 1rem;
+          margin-bottom: 1rem;
+          color: #303250;
+        }
 
-          .remove {
-            margin-left: 0.4rem;
+        .upload-box {
+          border: 2px dashed #ccc;
+          padding: 2rem;
+          text-align: center;
+          border-radius: 12px;
+          color: #999;
+          margin-bottom: 2rem;
+
+          .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #ff6b35;
+          }
+
+          .browse {
+            color: #ff6b35;
+            font-weight: bold;
             cursor: pointer;
           }
         }
-      }
 
-      .options-section {
-        margin-top: 2rem;
-
-        .size-color-row {
-          display: flex;
-          gap: 2rem;
-          flex-wrap: wrap;
+        .form-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 1rem;
 
           .form-group {
-            flex: 1;
+            display: flex;
+            flex-direction: column;
 
-            .size-options, .color-options {
-              display: flex;
-              gap: 0.5rem;
-              margin-top: 0.5rem;
+            label {
+              margin-bottom: 0.5rem;
+              font-weight: 600;
+              color: #333;
+            }
 
-              .size-box {
-                padding: 0.5rem 0.9rem;
-                background: #f0f2f5;
-                border-radius: 8px;
-                font-weight: bold;
-                cursor: pointer;
-              }
+            input,
+            select {
+              padding: 0.6rem 0.8rem;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              font-size: 0.95rem;
+            }
+          }
+        }
 
-              .color-dot {
-                width: 26px;
-                height: 26px;
-                border-radius: 50%;
-                border: 2px solid #dcdde1;
-                cursor: pointer;
+        .options-section {
+          margin-top: 2rem;
+
+          .size-color-row {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+
+            .form-group {
+              flex: 1;
+
+              .size-options,
+              .color-options {
+                display: flex;
+                gap: 0.5rem;
+                margin-top: 0.5rem;
+
+                .size-box {
+                  padding: 0.5rem 0.9rem;
+                  background: #f0f2f5;
+                  border-radius: 8px;
+                  font-weight: bold;
+                  cursor: pointer;
+                }
+
+                .color-dot {
+                  width: 26px;
+                  height: 26px;
+                  border-radius: 50%;
+                  border: 2px solid #dcdde1;
+                  cursor: pointer;
+                }
               }
             }
           }
         }
-      }
 
-      .full-width {
-        margin-top: 1.5rem;
+        .full-width {
+          margin-top: 1.5rem;
 
-        textarea {
-          width: 100%;
-          padding: 0.8rem;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          font-size: 0.95rem;
-          resize: vertical;
-        }
-      }
-
-      .pricing-section {
-        display: flex;
-        gap: 1rem;
-        margin-top: 2rem;
-        flex-wrap: wrap;
-
-        .pricing-group {
-          flex: 1;
-          min-width: 200px;
-
-          label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #303250;
-          }
-
-          .input-icon {
-            display: flex;
-            align-items: center;
+          textarea {
+            width: 100%;
+            padding: 0.8rem;
             border: 1px solid #ccc;
             border-radius: 8px;
-            overflow: hidden;
-            background: #fff;
-
-            span {
-              background: #f5f5f5;
-              padding: 0.6rem 0.8rem;
-              color: #555;
-              font-weight: bold;
-              border-right: 1px solid #ccc;
-            }
-
-            input {
-              flex: 1;
-              border: none;
-              padding: 0.6rem 0.8rem;
-              font-size: 0.95rem;
-
-              &:focus {
-                outline: none;
-              }
-            }
+            font-size: 0.95rem;
+            resize: vertical;
           }
         }
-      }
 
-      .submit-btn {
-        margin-top: 2rem;
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 8px;
-        background-color: #ff6b35;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.3s;
+        .submit-btn {
+          margin-top: 2rem;
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 8px;
+          background-color: #ff6b35;
+          color: white;
+          font-weight: bold;
+          cursor: pointer;
+          transition: 0.3s;
 
-        &:hover {
-          background-color: #e35a26;
+          &:hover {
+            background-color: #e35a26;
+          }
         }
       }
     }

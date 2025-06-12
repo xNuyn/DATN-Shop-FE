@@ -18,7 +18,8 @@ import { fetchDashboardData } from '../../../services/dashboardService';
 const filterOptions = [
   { label: '1W', value: 'week' },
   { label: '1M', value: 'month' },
-  { label: '1Y', value: 'year' }
+  { label: '1Y', value: 'year' },
+  { label: 'ALL', value: 'all'}
 ];
 
 interface ChartDataItem {
@@ -139,14 +140,12 @@ const Dashboard: React.FC = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
 
-                  {/* YAxis cho revenue (bên trái) */}
                   <YAxis
                     yAxisId="left"
                     tickFormatter={(value) => `${value.toLocaleString('vi-VN')} ₫`}
                     tick={{ fontSize: 12 }}
                   />
 
-                  {/* YAxis cho buyers (bên phải) */}
                   <YAxis
                     yAxisId="right"
                     orientation="right"
@@ -159,7 +158,6 @@ const Dashboard: React.FC = () => {
                   <Tooltip />
                   <Legend verticalAlign="top" />
 
-                  {/* Bar sử dụng yAxisId bên trái */}
                   <Bar
                     yAxisId="left"
                     dataKey="revenue"
@@ -168,7 +166,6 @@ const Dashboard: React.FC = () => {
                     fill="#ff6b35"
                   />
 
-                  {/* Line sử dụng yAxisId bên phải */}
                   <Line
                     yAxisId="right"
                     type="monotone"
