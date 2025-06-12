@@ -121,7 +121,7 @@ const FeaturedProducts = () => {
       </div>
 
       <div className="product-grid">
-        {filteredProducts.slice(0, 10).map((product, index) => (
+        {filteredProducts.slice(0, 10).map((product, _index) => (
           <ProductItem
             key={product.tagName}
             id={Number(product.newPrice)}
