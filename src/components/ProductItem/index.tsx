@@ -13,7 +13,7 @@ interface ProductItemProps {
     category: number | 0;
     brands: number | 0;
     sold_per_month: number | 0;
-    discount_percentage_max: number | 0;
+    discount_percentage_max: number | null;
 }
 
 const ProductItem: FC<ProductItemProps> = memo(
