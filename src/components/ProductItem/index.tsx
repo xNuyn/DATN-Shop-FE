@@ -10,7 +10,7 @@ interface ProductItemProps {
     image: string;
     price_min: number;
     price_max: number;
-    categories: number;
+    category: number;
     brands: number;
     sold_per_month: number;
     discount_percentage_max: number | null;

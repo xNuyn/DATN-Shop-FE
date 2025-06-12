@@ -84,7 +84,7 @@ export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [data, setData] = useState<ProductData | null>(null);
-  const [mainIdx, setMainIdx] = useState(0);
+  const [_mainIdx, setMainIdx] = useState(0);
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState<
     "description" | "specification" | "review"
@@ -93,7 +93,7 @@ export default function ProductDetail() {
   const [selectedSubProduct, setSelectedSubProduct] = useState<SubProduct | null>(null);
 
   const [allColors, setAllColors] = useState<string[]>([]);
-  const [allSizes, setAllSizes] = useState<string[]>([]);
+  const [_allSizes, setAllSizes] = useState<string[]>([]);
   const [allImages, setAllImages] = useState<string[]>([]);
 
   useEffect(() => {

@@ -114,7 +114,7 @@ const FeaturedProducts = () => {
           ))}
         </div>
         <a className="browse-all" onClick={()=>{
-            navigate("\shop-page")
+            navigate("/shop-page")
         }}>
           Browse All Product →
         </a>

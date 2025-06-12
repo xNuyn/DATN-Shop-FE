@@ -8,7 +8,7 @@ import { getSubproducts, SubProduct } from "../../../services/subproductService"
 
 const Review: React.FC = () => {
   const [reviews, setReviews] = useState<ReviewType[]>([]);
-  const [subproducts, setSubproducts] = useState<SubProduct[]>([]);
+  const [_subproducts, setSubproducts] = useState<SubProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalReviews, setTotalReviews] = useState(0);
 

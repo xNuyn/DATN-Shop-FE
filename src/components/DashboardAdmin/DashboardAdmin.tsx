@@ -15,7 +15,7 @@ import { logout } from "../../services/authService";
 
 const DashboardAdmin: React.FC = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  // const [user, setUser] = useState<any>(null);
   const location = useLocation();
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({
     products: false,
@@ -45,7 +45,7 @@ const DashboardAdmin: React.FC = () => {
           console.error("Logout failed:", error);
       } finally {
           localStorage.clear();
-          setUser(null);
+          // setUser(null);
           navigate("/");
       }
   };
