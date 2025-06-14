@@ -58,10 +58,9 @@ export interface PaginatedResponse {
 
 export const fetchProducts = async (): Promise<Product[]> => {
   const response = await axios.get(`${BASE_URL}/product/search-and`);
-  return response.data.data; // nếu chỉ lấy data mặc định
+  return response.data.data;
 };
 
-// Bổ sung page và limit, và trả về cả data + meta
 export const fetchFilteredProducts = async (
   categories: string[],
   brands: string[],
@@ -69,22 +68,28 @@ export const fetchFilteredProducts = async (
   keyword: string,
   sort_by: string,
   page: number,
-  limit: number
+  limit: number,
+  hiddenFilters: Record<string, string>,
 ): Promise<PaginatedResponse> => {
-  const params: any = {
+  const { price, category_name, brand_name } = hiddenFilters;
+
+  const params: Record<string, any> = {
     categories: categories.join(","),
     brands: brands.join(","),
-    price: priceRange,
-    keyword: keyword,
+    keyword,
     type_search_keyword: "contains",
     sort_by,
     page,
     limit,
+    price: price ?? priceRange,
+    category_name,
+    brand_name,
   };
 
   const response = await axios.get(`${BASE_URL}/product/search-and`, { params });
   return response.data as PaginatedResponse;
 };
+
 
 export const getProductDetail = async (productId: number) => {
   const response = await axios.get(`${BASE_URL}/product/${productId}`);

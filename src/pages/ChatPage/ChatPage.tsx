@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { sendChatMessage } from "../../services/chatapiService";
+import { useNavigate } from "react-router-dom";
 import "./ChatPage.scss";
 
 interface Message {
@@ -8,6 +9,7 @@ interface Message {
 }
 
 const ChatPage: React.FC = () => {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([
     { sender: "bot", text: "Xin chào! Tôi có thể giúp gì cho bạn?" },
   ]);
@@ -52,11 +54,32 @@ const ChatPage: React.FC = () => {
       </div>
       <div className="chat-page__right">
         <div className="chat-page__chat-window">
-          {messages.map((msg, index) => (
-            <div key={index} className={`chat-page__message ${msg.sender}`}>
-              {msg.text}
-            </div>
-          ))}
+          {messages.map((msg, index) => {
+            if (msg.sender === "bot" && msg.text.includes("JUMPTO:")) {
+              // tách toàn bộ phần sau JUMPTO: đến hết dòng
+              const parts = msg.text.split("JUMPTO:");
+              const beforeText = parts[0].trim();
+              const rawUrl = parts[1].trim(); 
+              const url = encodeURI(rawUrl); // mã hóa để giữ nguyên toàn bộ ký tự
+              return (
+                <div key={index} className="chat-page__message bot">
+                  {beforeText && <div>{beforeText}</div>}
+                  <button
+                    onClick={() => navigate(url)}
+                    className="chat-page__jump-btn"
+                  >
+                    👉 Đi tới liên kết
+                  </button>
+                </div>
+              );
+            }
+            // mặc định render text thường
+            return (
+              <div key={index} className={`chat-page__message ${msg.sender}`}>
+                {msg.text}
+              </div>
+            );
+          })}
           {loading && <div className="chat-page__message bot">Đang trả lời...</div>}
         </div>
         <div className="chat-page__input-container">

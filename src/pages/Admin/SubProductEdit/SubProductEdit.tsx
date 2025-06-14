@@ -70,7 +70,7 @@ const SubProductEdit: React.FC = () => {
       await updateSubProductById(sub.id, payload);
 
       alert('Cập nhật thành công!');
-      navigate('/admin-product-edit/:id');
+      navigate('/admin-subproduct-edit/:id');
     } catch (err) {
       console.error('Update failed:', err);
       alert('Cập nhật thất bại, vui lòng thử lại.');

@@ -19,12 +19,30 @@ interface SidebarFilterProps {
 }
 
 const priceOptions = [
-  "Dưới 10 triệu",
-  "10 - 15 triệu",
-  "15 - 20 triệu",
-  "20 - 25 triệu",
-  "25 - 30 triệu",
-  "Trên 30 triệu",
+  {
+    value: "< 10000000",
+    text: "Dưới 10 triệu"
+  },
+  {
+    value: "10000000->15000000",
+    text: "10 - 15 triệu"
+  },
+  {
+    value: "15000000->20000000",
+    text: "15 - 20 triệu"
+  },
+  {
+    value: "20000000->25000000",
+    text: "20 - 25 triệu"
+  },
+  {
+    value: "25000000->30000000",
+    text: "25 - 30 triệu"
+  },
+  {
+    value: "> 30000000",
+    text: "Trên 30 triệu"
+  }
 ];
 
 const SidebarFilter = ({
@@ -182,8 +200,8 @@ const SidebarFilter = ({
           className="price-radio-group"
         >
           {priceOptions.map((price) => (
-            <Radio key={price} value={price}>
-              {price}
+            <Radio key={price.value} value={price.value}>
+              {price.text}
             </Radio>
           ))}
         </Radio.Group>

@@ -1,35 +1,53 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Row, Col, Typography, Select, Input } from "antd";
 import ProductItem from "../../components/ProductItem";
 import SidebarFilter from "../../components/SidebarFilter/SidebarFilter";
 import Pagination from "../../components/Pagination/Pagination";
 import "./ShopPage.scss";
 import { fetchFilteredProducts, Product, PaginatedResponse } from "../../services/productService";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
 
 const PRODUCTS_PER_PAGE = 20;
 
 const ShopPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+
+  // URL params
   const categoryQuery = searchParams.get("categories") || "";
   const keywordQuery = searchParams.get("keyword") || "";
 
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(categoryQuery ? [categoryQuery] : []);
+  // Local state
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    categoryQuery ? [categoryQuery] : []
+  );
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedPrice, setSelectedPrice] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState(keywordQuery);
-  const [sortOption, setSortOption] = useState("bestseller");
+  const [searchTerm, setSearchTerm] = useState<string>(keywordQuery);
+  const [sortOption, setSortOption] = useState<string>("bestseller");
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [productList, setProductList] = useState<Product[]>([]);
 
-  // Nếu URL có keyword, đồng bộ vào local state
+  // Hidden filters from URL: price, brand_name, category_name
+  const hiddenFilters: Record<string, string> = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    const hf: Record<string, string> = {};
+    ["price", "brand_name", "category_name"].forEach((key) => {
+      const v = params.get(key);
+      if (v) hf[key] = v;
+    });
+    // console.log("hf", hf);
+    return hf;
+  }, [location.search]);
+
+  // Sync keyword
   useEffect(() => {
     setSearchTerm(keywordQuery);
   }, [keywordQuery]);
 
-  // Nếu URL có categories, đồng bộ vào local state
+  // Sync category
   useEffect(() => {
     if (categoryQuery) {
       setSelectedCategories([categoryQuery]);
@@ -38,21 +56,24 @@ const ShopPage = () => {
     }
   }, [categoryQuery]);
 
-  // Khi đổi category, cập nhật lại URL
+  // Update URL when selectedCategories or hiddenFilters change
   useEffect(() => {
+    const params: Record<string, string> = {};
     if (selectedCategories.length > 0) {
-      setSearchParams({ categories: selectedCategories[0] });
-    } else {
-      setSearchParams({});
+      params.categories = selectedCategories[0];
     }
-  }, [selectedCategories]);
+    // merge hidden filters to preserve them
+    Object.assign(params, hiddenFilters);
+    // set new search params
+    setSearchParams(params);
+  }, [selectedCategories, hiddenFilters, setSearchParams]);
 
-  // Scroll lên đầu trang khi đổi page
+  // Scroll to top on page change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
 
-  // Gọi API mỗi khi filters hoặc currentPage thay đổi
+  // Fetch products when filters/page change
   useEffect(() => {
     (async () => {
       try {
@@ -63,7 +84,8 @@ const ShopPage = () => {
           searchTerm,
           sortOption,
           currentPage,
-          PRODUCTS_PER_PAGE
+          PRODUCTS_PER_PAGE,
+          hiddenFilters
         );
 
         setProductList(resp.data);
@@ -72,13 +94,21 @@ const ShopPage = () => {
         console.error("Lỗi khi load products:", err);
       }
     })();
-  }, [selectedCategories, selectedBrands, selectedPrice, searchTerm, sortOption, currentPage]);
+  }, [
+    selectedCategories,
+    selectedBrands,
+    selectedPrice,
+    searchTerm,
+    sortOption,
+    currentPage,
+    hiddenFilters,
+  ]);
 
   return (
     <div className="shop-page-container">
       <Row gutter={24}>
         <Col xs={0} sm={0} md={6} lg={6}>
-          <SidebarFilter 
+          <SidebarFilter
             onCategoryChange={setSelectedCategories}
             onBrandChange={setSelectedBrands}
             onPriceChange={setSelectedPrice}
@@ -92,29 +122,37 @@ const ShopPage = () => {
           <div className="shop-header">
             <Typography.Title level={3}>Electronics Devices</Typography.Title>
             <div className="top-bar">
-              <Input.Search 
-                placeholder="Search for anything..." 
+              <Input.Search
+                placeholder="Search for anything..."
                 style={{ width: "50%" }}
                 defaultValue={searchTerm}
                 onSearch={(value) => {
                   setSearchTerm(value);
-                  setCurrentPage(1); // reset về trang 1 khi search mới
+                  setCurrentPage(1);
                 }}
               />
-              <Select 
-                value={sortOption} 
+              <Select
+                value={sortOption}
                 onChange={(value) => {
                   setSortOption(value);
-                  setCurrentPage(1); // reset page khi sort thay đổi
-                }} 
+                  setCurrentPage(1);
+                }}
                 style={{ width: 200 }}
               >
                 <Select.Option value="bestseller">Best Selling</Select.Option>
-                <Select.Option value="lowtohigh">Price: Low to High</Select.Option>
-                <Select.Option value="hightolow">Price: High to Low</Select.Option>
+                <Select.Option value="lowtohigh">
+                  Price: Low to High
+                </Select.Option>
+                <Select.Option value="hightolow">
+                  Price: High to Low
+                </Select.Option>
               </Select>
             </div>
-            <div className="result-count">{`${respCountString(productList.length, currentPage, PRODUCTS_PER_PAGE)} Results found`}</div>
+            <div className="result-count">{`${respCountString(
+              productList.length,
+              currentPage,
+              PRODUCTS_PER_PAGE
+            )} Results found`}</div>
           </div>
 
           <Row gutter={[16, 24]}>
@@ -136,9 +174,11 @@ const ShopPage = () => {
   );
 };
 
-// Hàm phụ để hiển thị “x on page y” (tuỳ chọn, không bắt buộc)
-// Nếu chỉ muốn hiển thị tổng số kết quả thì có thể viết đơn giản: `${total} Results found`
-function respCountString(countOnPage: number, currentPage: number, perPage: number) {
+function respCountString(
+  countOnPage: number,
+  currentPage: number,
+  perPage: number
+) {
   const start = (currentPage - 1) * perPage + 1;
   const end = start + countOnPage - 1;
   return `Showing ${start}–${end}`;

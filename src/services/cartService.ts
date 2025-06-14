@@ -4,10 +4,19 @@ const API_BASE = 'http://127.0.0.1:8000/api/cart';
 
 export const getMyCart = async () => {
   const token = localStorage.getItem('access_token');
-  const response = await axios.get(`${API_BASE}/my-cart`, {
+  try {
+    const response = await axios.get(`${API_BASE}/my-cart`, {
     headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
+    });
+    return response.data;
+  } catch (error) {
+    return [];
+  }
+
+  // if ("data" in response ){
+  //   return response.data;
+  // }
+  // else return [];
 };
 
 export const updateCartItem = async (id: number, quantity: number) => {
