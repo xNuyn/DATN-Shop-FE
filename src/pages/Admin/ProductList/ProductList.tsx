@@ -13,10 +13,26 @@ import { getCategories, Category } from '../../../services/categoryService';
 const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categoriesMap, setCategoriesMap] = useState<Record<number, string>>({});
+  // const [rootCategories, setRootCategories] = useState<Category[]>([]);
+  // const [activeCat, setActiveCat] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const itemsPerPage = 8;
   const navigate = useNavigate();
+
+  // Load root categories
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const roots = await getRootCategories();
+  //       setRootCategories(roots);
+  //       // Optionally set first as active
+  //       if (roots.length) setActiveCat(roots[0].id);
+  //     } catch (err) {
+  //       console.error('Fetch root categories failed:', err);
+  //     }
+  //   })();
+  // }, []);
 
   // Load all categories once
   useEffect(() => {
@@ -71,6 +87,18 @@ const ProductList: React.FC = () => {
     <div className="admin-layout">
       <DashboardAdmin />
       <div className="product-list">
+        {/* Category Tabs */}
+        {/* <div className="category-tabs">
+          {rootCategories.map(cat => (
+            <button
+              key={cat.id}
+              className={`tab-btn ${activeCat === cat.id ? 'active' : ''}`}
+              onClick={() => { setActiveCat(cat.id); setCurrentPage(1); }}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div> */}
         <div className="header">
           <h2>PRODUCT LIST</h2>
           <button className="btn-add" onClick={() => navigate('/admin-product-add')}>Add Product</button>

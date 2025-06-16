@@ -1,6 +1,6 @@
 .chat-page {
   display: flex;
-  height: 75vh;
+  height: 100vh;
   font-family: Arial, sans-serif;
   padding: 30px;
   border: 1px solid #ccc;
@@ -103,3 +103,29 @@
   }
 }
 
+/* Phần gợi ý sản phẩm */
+.chat-page__product-list {
+  max-height: 250px;      /* Chiều cao tối đa */
+  overflow-y: auto;       /* Bật scroll khi vượt khung */
+  margin: 10px 0;
+  padding: 10px;
+  border-top: 1px solid #eee;
+
+  h4 {
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+}
+
+/* Lưới 2 cột và co nhỏ ProductItem */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);  /* 2 sản phẩm/1 hàng */
+  gap: 12px;
+
+  /* Thu nhỏ mỗi card */
+  .product-item {
+    transform: scale(0.9);
+    transform-origin: top left;
+  }
+}

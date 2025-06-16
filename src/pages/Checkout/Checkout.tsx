@@ -45,6 +45,16 @@ const Checkout = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [discountPercentage, setDiscountPercentage] = useState<number>(0);
   const { billingInfo } = useBillingContext();
+  const [editBilling, setEditBilling] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    firstName: billingInfo.firstName,
+    lastName: billingInfo.lastName,
+    address: billingInfo.address,
+    country: billingInfo.country,
+    zipCode: billingInfo.zipCode,
+    phone: billingInfo.phone,
+    email: billingInfo.email,
+  });
 
   useEffect(() => {
     if (location.state) {
@@ -107,7 +117,6 @@ const Checkout = () => {
       const orderId: number = createdOrder.order.id;
 
       // 2. Tạo OrderDetail cho từng item trong cart
-      // 2. Tạo OrderDetail cho từng item trong cart
       const detailPromises: Promise<any>[] = cartItems.map((item) => {
         const detailPayload: OrderDetailRequest = {
           order_id: orderId,
@@ -167,12 +176,16 @@ const Checkout = () => {
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   return (
     <div className="checkout-container">
       <div className="checkout-main form-section">
         <h2>Billing Information</h2>
-        <form className="billing-form">
+        {/* <form className="billing-form">
           <div className="form-grid">
             <input type="text" placeholder="First Name" value={billingInfo.firstName} readOnly />
             <input type="text" placeholder="Last Name" value={billingInfo.lastName} readOnly />
@@ -186,7 +199,32 @@ const Checkout = () => {
           <div className="checkbox">
             <input type="checkbox" id="shipDifferent" />
             <label htmlFor="shipDifferent">Ship to a different address</label>
-          </div>
+          </div> */}
+          <form className="billing-form">
+            <div className="form-grid">
+              {['firstName','lastName','address','country','zipCode','phone','email'].map(field => (
+                <input
+                  key={field}
+                  type={field === 'email' ? 'email' : 'text'}
+                  name={field}
+                  placeholder={field.replace(/([A-Z])/g, ' $1').trim()}
+                  value={formData[field as keyof typeof formData]}
+                  readOnly={!editBilling}
+                  className={field === 'address' ? 'full-width' : ''}
+                  onChange={handleChange}
+                />
+              ))}
+            </div>
+            <div className="checkbox">
+              <input
+                type="checkbox"
+                id="editBilling"
+                checked={editBilling}
+                onChange={() => setEditBilling(!editBilling)}
+              />
+              <label htmlFor="editBilling">Ship to a different address / Edit Billing Info</label>
+            </div>
+          </form>
 
           <h2>Payment Option</h2>
           <div className="methods">
@@ -216,7 +254,7 @@ const Checkout = () => {
           <div className="additional-notes">
             <textarea placeholder="Notes about your order..." />
           </div>
-        </form>
+        {/* </form> */}
       </div>
 
       <div className="checkout-summary summary-section">

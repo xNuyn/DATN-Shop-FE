@@ -175,6 +175,10 @@ const DashboardAdmin: React.FC = () => {
               }`}
               onClick={() => navigate("/admin-coupon-list")}>List</div>
             <div className={`submenu-item ${
+              location.pathname.startsWith('/admin-coupon-edit') ? 'active' : ''
+              }`}
+              onClick={() => navigate("/admin-coupon-edit/:id")}>Edit</div>
+            <div className={`submenu-item ${
               location.pathname === '/admin-coupon-add' ? 'active' : ''
               }`}
               onClick={() => navigate("/admin-coupon-add")}>Add New</div>

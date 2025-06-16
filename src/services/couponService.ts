@@ -101,3 +101,29 @@ export const deleteDiscount = async (id: number): Promise<void> => {
     }
   );
 };
+
+export interface Coupon {
+  id: number;
+  code: string;
+  discount_percentage: string;
+  quantity: number;
+  valid_from: string;
+  valid_until: string;
+  is_active: boolean;
+}
+
+export const getCouponById = async (id: number): Promise<Coupon> => {
+  const token = localStorage.getItem('access_token');
+  const response = await axios.get<Coupon>(`${API_BASE_URL}/discount/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};
+
+export const updateCoupon = async (id: number, payload: Partial<Coupon>): Promise<Coupon> => {
+  const token = localStorage.getItem('access_token');
+  const response = await axios.patch<Coupon>(`${API_BASE_URL}/discount/${id}`, payload, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};

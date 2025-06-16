@@ -33,7 +33,9 @@ const CustomerList: React.FC = () => {
     (async () => {
       try {
         const res = await getUsers(currentPage, itemsPerPage);
-        setUsers(res.data);
+        // setUsers(res.data);
+        const filtered = res.data.filter((u: any) => u.role !== 'admin');
+        setUsers(filtered);
         setTotalPages(res.meta.last_page);
       } catch (err) {
         console.error(err);

@@ -68,6 +68,16 @@ const ShoppingCart = () => {
     }
   };
 
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      alert('Chưa có sản phẩm nào sẵn sàng thanh toán.');
+    } else {
+      navigate("/checkout", {
+        state: { cartItems, discountPercentage },
+      });
+    }
+  };
+
   const handleApplyCoupon = async () => {
     try {
       const coupon = await getDiscountByCode(couponCode);
@@ -150,16 +160,7 @@ const ShoppingCart = () => {
               <li><span>Tax</span><span>{tax.toLocaleString('en-US', {  maximumFractionDigits: 2 })} VNĐ</span></li>
               <li className="total"><span>Total</span><span>{total.toLocaleString('en-US', {  maximumFractionDigits: 2 })} VNĐ</span></li>
             </ul>
-            <button className="checkout-btn" 
-                    onClick={() => navigate("/checkout", {
-                      state: {
-                        cartItems,
-                        discountPercentage,
-                    },
-                  }
-                )
-              }
-            >
+            <button className="checkout-btn" onClick={handleCheckout}>
               PROCEED TO CHECKOUT →
             </button>
           </div>

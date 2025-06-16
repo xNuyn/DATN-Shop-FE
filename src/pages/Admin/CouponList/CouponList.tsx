@@ -149,7 +149,7 @@ const CouponList: React.FC = () => {
                 <tbody>
                   {coupons.map((coupon) => (
                     <tr key={coupon.id}>
-                      <td className="code">{coupon.code}</td>
+                      <td className="code" style={{ cursor: "pointer" }} onClick={() => navigate(`/admin-coupon-edit/${coupon.id}`)}>{coupon.code}</td>
                       <td>
                         <span
                           className={`status ${

@@ -35,28 +35,28 @@ const HomePage = () => {
           <button className="carousel-button left">{'<'}</button>
           <div className="carousel-items">
             <div className="carousel-item">
-              <img src="https://cdn.tgdd.vn/Products/Images/44/289472/apple-macbook-air-m2-2022-xanh-den-1-2-600x600.jpg" alt="Laptop" />
+              <img src="https://res.cloudinary.com/dqfrshwt9/image/upload/v1750082348/gce55wc2vg3g0qeqzf2e.jpg" alt="Laptop" />
               <p>Laptop</p>
             </div>
             <div className="carousel-item">
-              <img src="https://cdn.tgdd.vn/Products/Images/42/335955/samsung-galaxy-s25-edge-sliver-thumb-600x600.jpg" alt="SmartPhone" />
+              <img src="https://res.cloudinary.com/dqfrshwt9/image/upload/v1750082185/kjpvubipcps2miqskc7o.jpg" alt="SmartPhone" />
               <p>SmartPhone</p>
             </div>
             <div className="carousel-item">
-              <img src="https://cdn.tgdd.vn/Products/Images/54/324580/tai-nghe-bluetooth-chup-tai-jbl-tune-670nc-xanh-thumb-600x600.jpg" alt="Headphones" />
+              <img src="https://res.cloudinary.com/dqfrshwt9/image/upload/v1750081983/newpn8v0zttvwu95ya1v.jpg" alt="Headphones" />
               <p>Headphones</p>
             </div>
             <div className="carousel-item">
               <img src="https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/4547/338172/bo-ban-phim-chuot-khong-day-philips-spt6348-160525-103518-470-600x600.jpg" alt="Accessories" />
-              <p>Accessories</p>
+              <p>Keyboard</p>
             </div>
             <div className="carousel-item">
-              <img src="https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/4728/329241/camera-ip-360-do-3mp-ezviz-ty1-thumb-1-638665876017214332-600x600.jpg" alt="Camera" />
-              <p>Camera</p>
+              <img src="https://res.cloudinary.com/dqfrshwt9/image/upload/v1750081816/dcsrq7goroquolic8blw.jpg" alt="Camera" />
+              <p>PC</p>
             </div>
             <div className="carousel-item">
-              <img src="https://cdn.tgdd.vn/Products/Images/5697/321396/xiaomi-a27i-27-inch-fhd-thumb-600x600.jpg" alt="TV & Homes" />
-              <p>TV & Homes</p>
+              <img src="https://res.cloudinary.com/dqfrshwt9/image/upload/v1750081905/innlci6sksatzivzweyd.jpg" alt="TV & Homes" />
+              <p>Tablet</p>
             </div>
           </div>
           <button className="carousel-button right">{'>'}</button>

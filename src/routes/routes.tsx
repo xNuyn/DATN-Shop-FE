@@ -30,6 +30,7 @@ import OrderEdit from '../pages/Admin/OrderEdit/OrderEdit';
 import ProductList from '../pages/Admin/ProductList/ProductList';
 import SubProductList from '../pages/Admin/SubProductList/SubProductList';
 import SubProductEdit from '../pages/Admin/SubProductEdit/SubProductEdit';
+import CouponEdit from '../pages/Admin/CouponEdit/CouponEdit';
 
 export default function RouteComponent() {
     const routeElements = useRoutes([
@@ -241,10 +242,16 @@ export default function RouteComponent() {
                 <ProductList/>
             ),
         },
-                {
+        {
             path: '/admin-subproduct-list/:id',
             element: (
                 <SubProductList/>
+            ),
+        },
+        {
+            path: '/admin-coupon-edit/:id',
+            element: (
+                <CouponEdit/>
             ),
         },
     ]);

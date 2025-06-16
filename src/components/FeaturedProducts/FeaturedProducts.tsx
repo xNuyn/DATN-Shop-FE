@@ -3,7 +3,7 @@ import ProductItem from "../ProductItem";
 import "./FeaturedProducts.scss";
 import { useNavigate } from "react-router-dom";
 
-const productTabs = ["All Product", "Smart Phone", "Laptop", "Headphone", "TV"];
+const productTabs = ["All Product", "Laptop", "Smart Phone", "Headphones", "Keyboard", "PC", "Tablet"];
 
 const sampleProducts = [
   {
@@ -113,7 +113,7 @@ const FeaturedProducts = () => {
             </span>
           ))}
         </div>
-        <a className="browse-all" onClick={()=>{
+        <a className="browse-all" style={{ cursor: "pointer" }} onClick={()=>{
             navigate("/shop-page")
         }}>
           Browse All Product →
@@ -125,20 +125,14 @@ const FeaturedProducts = () => {
           <ProductItem
             key={product.tagName}
             id={Number(product.newPrice)}
-            // name={product.name}
-            // description={product.description}
-            // image={product.image}
-            // price_min={product.price_min}
             price_max={Number(product.newPrice)}
-            // category={product.category}
             brands={Number(product.newPrice)}
             sold_per_month={Number(product.newPrice)}
             discount_percentage_max={Number(product.newPrice)}
-
             name={product.tagName}
             description={product.productName}
             image={product.image}
-            price_min={Number(product.newPrice)}      // ép thành số
+            price_min={Number(product.newPrice)}
             category={Number(product.category)}
           />
         ))}
