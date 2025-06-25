@@ -1,6 +1,6 @@
 import ProductCategoryGrid from '../../components/ProductCategoryGrid/ProductCategoryGrid';
 import './HomePage.scss';
-import FeaturedProducts from "../../components/FeaturedProducts/FeaturedProducts";
+// import FeaturedProducts from "../../components/FeaturedProducts/FeaturedProducts";
 import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
@@ -62,7 +62,7 @@ const HomePage = () => {
           <button className="carousel-button right">{'>'}</button>
         </div>
       </div>
-      <FeaturedProducts />
+      {/* <FeaturedProducts /> */}
       <div className="promo-video1">
         <div className="video-wrapper">
             <video
